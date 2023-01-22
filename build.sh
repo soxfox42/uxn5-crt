@@ -6,10 +6,12 @@ TARGET="bin/output.rom"
 rm -rf bin
 mkdir bin
 
-echo "Assembling unicycle.."
-uxnasm $SOURCE $TARGET
-echo "Assembling formatter.."
+# Assembler
 uxnasm etc/format-js.tal bin/format-js.rom
+uxnasm etc/drifloon.tal bin/drifloon.rom
+
+echo "Assembling unicycle.."
+echo "Assembling formatter.."
+
 echo "Writing program.js.."
-uxncli bin/format-js.rom $TARGET > etc/program.js
 echo "Done."
