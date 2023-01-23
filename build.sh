@@ -7,11 +7,11 @@ rm -rf bin
 mkdir bin
 
 # Assembler
+echo "Assembling formatter.."
 uxnasm etc/format-js.tal bin/format-js.rom
 uxnasm etc/drifloon.tal bin/drifloon.rom
 
-echo "Assembling unicycle.."
-echo "Assembling formatter.."
-
 echo "Writing program.js.."
+uxncli bin/format-js.rom bin/drifloon.rom > src/asm.js
 echo "Done."
+
