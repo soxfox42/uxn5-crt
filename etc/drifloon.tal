@@ -74,9 +74,8 @@ JMP2r
 	#0100 set-head
 	;dict/reset ;scope scpy
 	#00 ;write/skip STA
-	handle-source
 
-JMP2r
+!handle-source
 
 @parse ( t* -- )
 
@@ -90,11 +89,10 @@ JMP2r
 		#0003 ADD2 GTH2k ?&l
 	POP2 POP2
 	( non-runic )
-	DUP2 is-hex ?lib/rawhex
-	DUP2 is-opcode ?lib/opcode
-	lib/litjsi
+	is-hex ?lib/rawhex
+	is-opcode ?lib/opcode
 
-JMP2r
+!lib/litjsi
 
 @lib
 	&padabs INC2 get-hex write-pad !set-head
@@ -196,11 +194,10 @@ JMP2r
 
 @get-hex ( str* -- value* )
 
-	DUP2 is-hex ?&valid
-		;err/number !on-error
-		&valid
+	is-hex ?shex
+	get-ref/no-write LDA2
 
-!shex
+JMP2r
 
 @get-rel ( label* -- distance )
 
@@ -234,8 +231,8 @@ JMP2r
 @create-label ( name* -- )
 
 	;write/skip LDA #00 EQU ?&skip
-	( not hex ) DUP2 is-hex ?&invalid
-	( not opc ) DUP2 is-opcode ?&invalid
+	( not hex ) is-hex ?&invalid
+	( not opc ) is-opcode ?&invalid
 	( not dup ) DUP2 find-label INC2 ORA ?&not-unique
 	( save addr ) ;write/head LDA2 [ LIT2 &ptr =symbols ] STH2k STA2
 	( move ) INC2r INC2r INC2r
@@ -257,8 +254,9 @@ JMP2r
 
 JMP2r
 
-@is-hex ( str* -- f )
+@is-hex ( str* -- str* f )
 
+	DUP2
 	&w
 		LDAk chex INC ?&valid
 			POP2 #00 JMP2r &valid
@@ -268,9 +266,9 @@ JMP2r
 
 JMP2r
 
-@is-opcode ( string* -- f )
+@is-opcode ( str* -- str* f )
 
-	DUP2 ;opcodes/brk scmp3 ?find-opcode/on-brk
+	DUP2 DUP2 ;opcodes/brk scmp3 ?find-opcode/on-brk
 
 @find-opcode ( name* -- byte )
 
@@ -342,9 +340,9 @@ JMP2r
 	( result )
 	;dict/assembled pstr ;write/length LDA2 #00ff SUB2 pdec ;dict/bytes pstr
 	;create-label/count LDA2 pdec ;dict/labels pstr
-	;dict/end pstr
+	;dict/end
 
-JMP2r
+!pstr
 
 (
 @|stdlib )
@@ -356,7 +354,6 @@ JMP2r
 @scat ( src* dst* -- ) scap
 @scpy ( src* dst* -- ) OVR2 LDA ?&e POP2 POP2 JMP2r &e STH2 &w LDAk STH2kr STA INC2r INC2 LDAk ?&w POP2 #00 STH2r STA JMP2r
 @sclr ( str* -- ) LDAk ?&w POP2 JMP2r &w STH2k #00 STH2r STA INC2 LDAk ?&w POP2 JMP2r
-@skey ( key buf -- proc ) OVR #21 LTH ?&eval #00 SWP sput #00 JMP2r &eval POP2 #01 JMP2r
 @scmp ( a* b* -- f ) STH2 &l LDAk LDAkr STHr ANDk #00 EQU ?&e NEQk ?&e POP2 INC2 INC2r !&l &e NIP2 POP2r EQU JMP2r
 @scmp3 ( a* b* -- f ) LDA2k ROT2 LDA2k ROT2 EQU2 STH INC2 LDA2 SWP2 INC2 LDA2 EQU2 STHr AND JMP2r
 @chex ( c -- val|ff ) LIT "0 SUB DUP #09 GTH [ JMP JMP2r ] #27 SUB DUP #0f GTH [ JMP JMP2r ] POP #ff JMP2r
@@ -394,7 +391,7 @@ JMP2r
 	&unused "-- 20 "Unused 20 "label: 20 $1
 
 @err "!! 20 "Error: 20 $1
-	&duplicate "Duplicate  $1
+	&duplicate "Duplicate $1
 	&number "Number $1
 	&reference "Reference $1
 	&distance "Distance $1
@@ -429,4 +426,5 @@ JMP2r
 @sublabel $20
 @source $4000
 @symbols ( addr*, refs, name[], 00 )
+
 
