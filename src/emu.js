@@ -66,26 +66,11 @@ function Emu ()
 
 	this.deo = (port, val) => {
 		this.uxn.setdev(port, val)
-		if(port == 0x10 || port == 0x11) {
-			console.log("Set console vector")
-		}
-		else if(port == 0x00 || port == 0x01) {
-			console.log("Set system vector")
-		}
-		else if(port == 0x02) {
-			this.uxn.wst.addr = val ? val * 0x100 : 0x10000
-		}
-		else if(port == 0x18) {
-			this.console.write(val)
-		}
-		else if(port == 0x19) {
-			this.console.error(val)
-		}
-		else if(port == 0x0f) {
-			console.warn("Program ended.")
-		}
-		else {
-			console.log("Unknown deo", port, val)
+		switch(port) {
+		case 0x18: this.console.write(val); break;
+		case 0x19: this.console.error(val); break;
+		case 0x0f: console.warn("Program ended."); break;
+		default: console.log("Unknown deo", port, val)
 		}
 	}
 }
