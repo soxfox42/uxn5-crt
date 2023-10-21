@@ -5,6 +5,8 @@
 	<title>Uxntal Playground</title>
 	<script src="src/uxn.js"></script>
 	<script src="src/emu.js"></script>
+	<script src="src/devices/console.js"></script>
+	<script src="src/devices/screen.js"></script>
 </head>
 <body>
 	<canvas id='screen'></canvas>
@@ -25,17 +27,23 @@
   	}
 
 	// Hello World
-	const hello_world = new Uint8Array([
+	const hello_rom = new Uint8Array([
 	0xa0, 0x01, 0x12, 0x94, 0x80, 0x18, 0x17, 0x21, 
 	0x94, 0x20, 0xff, 0xf7, 0x22, 0xa0, 0x01, 0x0f, 
 	0x17, 0x00, 0x48, 0x65, 0x6c, 0x6c, 0x6f, 0x20, 
 	0x57, 0x6f, 0x72, 0x6c, 0x64, 0x21, 0x0a, 0x00])
 
+	// Palette
+	const palette_rom = new Uint8Array([
+	0xa0, 0xf0, 0x7f, 0x80, 0x08, 0x37, 0xa0, 0xf0, 
+	0xd6, 0x80, 0x0a, 0x37, 0xa0, 0xf0, 0xb2, 0x80, 
+	0x0c, 0x37, 0x00])
+
 	// Let's go!
 	let emulator = new Emu()
 	emulator.console.write_el = document.getElementById("console_std")
 	emulator.console.error_el = document.getElementById("console_err")
-	emulator.uxn.load(hello_world).eval(0x0100)
+	emulator.uxn.load(palette_rom).eval(0x0100)
 	console.log(emulator.uxn.wst)
 </script>
 

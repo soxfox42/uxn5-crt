@@ -1,34 +1,11 @@
 'use strict'
 
-function Console(emu)
-{
-	this.write_el = null
-	this.error_el = null
-
-	this.write = (char) => {
-		this.write_el.innerHTML += String.fromCharCode(char)
-	}
-
-	this.error = (char) => {
-		this.error_el.innerHTML += String.fromCharCode(char)
-	}
-
-	this.input = (char) => {
-		// Get vector
-		let vec = emu.uxn.peek16(emu.uxn.dev + 0x10)
-		// Set char
-		emu.uxn.poke8(emu.uxn.dev + 0x12, char)
-		if(!vec)
-			console.warn("No console vector")
-		emu.uxn.eval(vec)
-	}
-}
-
 function Emu ()
 {
 	this.debug = 0
 	this.uxn = new Uxn(this)
 	this.console = new Console(this)
+	this.screen = new Screen(this)
 
 	let opcodes = [
 		"LIT", "INC", "POP", "NIP", "SWP", "ROT", "DUP", "OVR",
@@ -67,6 +44,12 @@ function Emu ()
 	this.deo = (port, val) => {
 		this.uxn.setdev(port, val)
 		switch(port) {
+		case 0x08:
+		case 0x09:
+		case 0x0a:
+		case 0x0b:
+		case 0x0c: 
+		case 0x0d: this.screen.update_palette(); break;
 		case 0x18: this.console.write(val); break;
 		case 0x19: this.console.error(val); break;
 		case 0x0f: console.warn("Program ended."); break;
