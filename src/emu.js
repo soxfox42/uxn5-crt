@@ -44,21 +44,27 @@ function Emu ()
 	this.deo = (port, val) => {
 		this.uxn.setdev(port, val)
 		switch(port) {
+		// System
 		case 0x08:
 		case 0x09:
 		case 0x0a:
 		case 0x0b:
 		case 0x0c: 
 		case 0x0d: this.screen.update_palette(); break;
+		case 0x0f: console.warn("Program ended."); break;
+		// Console
 		case 0x18: this.console.write(val); break;
 		case 0x19: this.console.error(val); break;
+		// Screen
 		case 0x2e: 
 			let x = this.uxn.peek16(this.uxn.dev + 0x28)
 			let y = this.uxn.peek16(this.uxn.dev + 0x2a)
 			let color = this.uxn.peek8(this.uxn.dev + 0x2e)
 			this.screen.pixel(x,y,color);
 			break;
-		case 0x0f: console.warn("Program ended."); break;
+		case 0x2f:
+			// TODO: Sprite
+			break:
 		}
 	}
 }
