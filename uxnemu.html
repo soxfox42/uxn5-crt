@@ -16,16 +16,6 @@
 <script type="text/javascript">
 	'use strict'
 
-	// fill canvas black
-	const canvas = document.getElementById("screen")
-  	if (canvas.getContext) {
-    	const ctx = canvas.getContext("2d")
-		ctx.canvas.width  = 320
-  		ctx.canvas.height = 240
-		ctx.fillStyle = "black"
-    	ctx.fillRect(0, 0, 320, 240)
-  	}
-
 	// Hello World
 	const hello_rom = new Uint8Array([
 	0xa0, 0x01, 0x12, 0x94, 0x80, 0x18, 0x17, 0x21, 
@@ -39,12 +29,19 @@
 	0xd6, 0x80, 0x0a, 0x37, 0xa0, 0xf0, 0xb2, 0x80, 
 	0x0c, 0x37, 0x00])
 
-	// Let's go!
 	let emulator = new Emu()
 	emulator.console.write_el = document.getElementById("console_std")
 	emulator.console.error_el = document.getElementById("console_err")
+	emulator.screen.ctx = document.getElementById("screen").getContext("2d")
+
+	// fill canvas black
+	emulator.screen.ctx.canvas.width  = 320
+  	emulator.screen.ctx.canvas.height = 240
+	emulator.screen.ctx.fillStyle = "black"
+    emulator.screen.ctx.fillRect(0, 0, 320, 240)
+
+	// Let's go!
 	emulator.uxn.load(palette_rom).eval(0x0100)
-	console.log(emulator.uxn.wst)
 </script>
 
 <style>

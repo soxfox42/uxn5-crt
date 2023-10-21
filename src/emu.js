@@ -52,6 +52,7 @@ function Emu ()
 		case 0x0d: this.screen.update_palette(); break;
 		case 0x18: this.console.write(val); break;
 		case 0x19: this.console.error(val); break;
+		case 0x2e: this.screen.pixel(); break;
 		case 0x0f: console.warn("Program ended."); break;
 		default: console.log("Unknown deo", port, val)
 		}
