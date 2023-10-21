@@ -134,7 +134,7 @@ function Uxn (emu)
 				this.src = this.wst
 				this.dst = this.rst
 			}
-			
+
 			opcode = instr & 0x1f;
 			switch(opcode - (!opcode * (instr >> 5))) {
 			/* Literals/Calls */
@@ -143,9 +143,9 @@ function Uxn (emu)
 			case -0x2: /* JMI */ pc = this.move(this.peek16(pc) + 2, pc); break;
 			case -0x3: /* JSI */ this.rst.push16(pc + 2); pc = this.move(this.peek16(pc) + 2, pc); break;
 			case -0x4: /* LIT */
-			case -0x6: /* LITr */ 
+			case -0x6: /* LITr */
 			case -0x5: /* LIT2 */
-			case -0x7: /* LIT2r */ 
+			case -0x7: /* LIT2r */
 			// Stack
 			case 0x00: /* LIT */ this.push(this.peek(pc)); pc = this.move(!!this.r2 + 1, pc); break;
 			case 0x01: /* INC */ this.push(this.pop() + 1); break;
