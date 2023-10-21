@@ -3,7 +3,7 @@
 
 function Screen(emu)
 {
-	this.colors = {};
+	this.colors = [];
 
 	function rgbToHex(r, g, b) {
 		return "#" + r.toString(16) + g.toString(16) + b.toString(16);
