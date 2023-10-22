@@ -64,7 +64,7 @@ function Emu ()
 			break;
 		case 0x2f:
 			// TODO: Sprite
-			break:
+			break;
 		}
 	}
 }
