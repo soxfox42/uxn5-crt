@@ -73,4 +73,8 @@ function Emu ()
 			break;
 		}
 	}
+
+	this.screen_callback = () => {
+		this.uxn.eval(this.uxn.peek16(this.uxn.dev + 0x20))
+	}
 }
