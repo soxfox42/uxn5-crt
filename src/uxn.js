@@ -85,12 +85,13 @@ function Uxn (emu)
 		this.ram[addr] = val
 	}
 
+	this.poke16 = (addr, val) => {
+		this.ram[addr] = val >> 8;
+		this.ram[addr + 1] = val;
+	}
+
 	this.poke = (addr, val) => {
-		if(this.r2) {
-			this.ram[addr] = val >> 8;
-			this.ram[addr + 1] = val;
-		} else
-			this.ram[addr] = val
+		return this.r2 ? this.poke16(addr, val) : this.poke8(addr, val)
 	}
 
 	this.devr = (port) => {

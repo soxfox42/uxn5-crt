@@ -23,7 +23,7 @@ Include the boot sequence in your website, and evaluate a program:
 
 - `00` system(missing)
 - `10` console(partial)
-- `20` screen(missing)
+- `20` screen(partial)
 - `30` audio(missing)
 - `70` midi(missing)
 - `80` controller(missing)
