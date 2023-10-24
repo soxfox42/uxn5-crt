@@ -78,5 +78,5 @@ JMP2r
 
 JMP2r
 
-@header-txt "const 20 "assembler 20 "= 20 "new 20 "Uint8Array([ 0a 09 00
+@header-txt "const 20 "rom 20 "= 20 "new 20 "Uint8Array([ 0a 09 00
 @footer-txt "0x00]) 00
