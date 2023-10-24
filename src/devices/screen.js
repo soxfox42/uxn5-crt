@@ -18,9 +18,9 @@ function Screen(emu)
 	this.draw_pixel = (x,y,color) => {
 		emulator.screen.ctx.fillStyle = rgbhex(this.colors[color])
 		emulator.screen.ctx.fillRect(x, y, 1, 1)
-        console.log(x,y,color);
 	}
 
+	// TODO cleanup
 	this.draw_sprite = (ctrl, x, y, ptr, move) => {
 		const twobpp = !!(ctrl & 0x80);
 		const length = move >> 4;
