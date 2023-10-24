@@ -48,7 +48,7 @@ function Emu ()
 
 	this.deo = (port, val) => {
 		this.uxn.setdev(port, val)
-		let x, y = 0;
+		let x, y, move, ctrl = 0;
 		switch(port) {
 		// System
 		case 0x08:
@@ -69,15 +69,16 @@ function Emu ()
 		case 0x2e: 
 			x = this.uxn.peek16(this.uxn.dev + 0x28)
 			y = this.uxn.peek16(this.uxn.dev + 0x2a)
-			let color = this.uxn.peek8(this.uxn.dev + 0x2e)
-			this.screen.draw_pixel(x,y,color);
+			move = this.uxn.peek8(this.uxn.dev + 0x26)
+			ctrl = this.uxn.peek8(this.uxn.dev + 0x2f)
+			this.screen.draw_pixel(ctrl,x,y, move);
 			break;
 		case 0x2f:
 			x = this.uxn.peek16(this.uxn.dev + 0x28)
 			y = this.uxn.peek16(this.uxn.dev + 0x2a)
+			move = this.uxn.peek8(this.uxn.dev + 0x26)
+			ctrl = this.uxn.peek8(this.uxn.dev + 0x2f)
 			let ptr = this.uxn.peek16(this.uxn.dev + 0x2c)
-			let move = this.uxn.peek8(this.uxn.dev + 0x26)
-			let ctrl = this.uxn.peek8(this.uxn.dev + 0x2f)
 			this.screen.draw_sprite(ctrl, x, y, ptr, move);
 			break;
 		}

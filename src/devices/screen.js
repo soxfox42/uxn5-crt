@@ -37,10 +37,27 @@ function Screen(emu)
 		this.blank_screen()
 	}
 
-	this.draw_pixel = (x,y,color) => {
-		// TODO layer
-		emulator.screen.fgctx.fillStyle = rgbhex(this.colors[color])
-		emulator.screen.fgctx.fillRect(x, y, 1, 1)
+	this.draw_pixel = (ctrl,x,y,move) => {
+		const ctx = ctrl & 0x40 ? emulator.screen.fgctx : emulator.screen.bgctx
+		const color = ctrl & 0x3;
+		// fill mode
+		if(ctrl & 0x80) {
+			x2 = this.width
+			y2 = this.height
+			if(ctrl & 0x10) x2 = x, x = 0;
+			if(ctrl & 0x20) y2 = y, y = 0;
+			ctx.fillStyle = rgbhex(this.colors[color])
+			ctx.fillRect(x, y, x2, y2)
+		}
+		// pixel mode
+		ctx.fillStyle = rgbhex(this.colors[color])
+		ctx.fillRect(x, y, 1, 1)
+		if (move & 0x1) {
+			emu.uxn.poke16(emu.uxn.dev + 0x28, x + 1);
+		}
+		if (move & 0x2) {
+			emu.uxn.poke16(emu.uxn.dev + 0x2a, y + 1);
+		}
 	}
 
 	// TODO cleanup
