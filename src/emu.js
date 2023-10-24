@@ -62,6 +62,10 @@ function Emu ()
 		case 0x18: this.console.write(val); break;
 		case 0x19: this.console.error(val); break;
 		// Screen
+		case 0x22, 0x23: 
+			this.screen.set_width(this.uxn.peek16(this.uxn.dev + 0x22)); break;
+		case 0x24, 0x25: 
+			this.screen.set_height(this.uxn.peek16(this.uxn.dev + 0x24)); break;
 		case 0x2e: 
 			x = this.uxn.peek16(this.uxn.dev + 0x28)
 			y = this.uxn.peek16(this.uxn.dev + 0x2a)

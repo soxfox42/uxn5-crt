@@ -14,20 +14,44 @@ const blending = [
 function Screen(emu)
 {
 	this.colors = [];
+	this.width, this.height = 0;
+
+	this.blank_screen = () => {
+		emulator.screen.bgctx.fillStyle = "black"
+		emulator.screen.bgctx.fillRect(0, 0, this.width, this.height)
+	}
+
+	// naive functions
+	// assumes that you set height/width on startup (most roms do)
+	this.set_width = (w) => {
+		this.width = w;
+		emulator.screen.fgctx.canvas.width = w;
+		emulator.screen.bgctx.canvas.width = w;
+		this.blank_screen()
+	}
+
+	this.set_height = (h) => {
+		this.height = h;
+		emulator.screen.bgctx.canvas.height = h;
+		emulator.screen.fgctx.canvas.height = h;
+		this.blank_screen()
+	}
 
 	this.draw_pixel = (x,y,color) => {
-		emulator.screen.ctx.fillStyle = rgbhex(this.colors[color])
-		emulator.screen.ctx.fillRect(x, y, 1, 1)
+		// TODO layer
+		emulator.screen.fgctx.fillStyle = rgbhex(this.colors[color])
+		emulator.screen.fgctx.fillRect(x, y, 1, 1)
 	}
 
 	// TODO cleanup
 	this.draw_sprite = (ctrl, x, y, ptr, move) => {
 		const twobpp = !!(ctrl & 0x80);
 		const length = move >> 4;
-		// Layer TOOD ctrl & 0x40 (everything on 1 layer currently)
+		// background or foreground canvas
+		const ctx = ctrl & 0x40 ? emulator.screen.fgctx : emulator.screen.bgctx
 		const color = ctrl & 0xf;
-		const width = emulator.screen.ctx.canvas.width;
-		const height = emulator.screen.ctx.canvas.height;
+		const width = ctx.canvas.width;
+		const height = ctx.canvas.height;
 		const opaque = color % 5;
 		const flipx = (ctrl & 0x10);
 		const fx = flipx ? -1 : 1;
@@ -42,7 +66,7 @@ function Screen(emu)
 		for (let i = 0; i <= length; i++) {
 			let x1 = x + dyx * i;
 			let y1 = y + dxy * i;
-			var imDat = emulator.screen.ctx.createImageData(8, 8);
+			var imDat = ctx.createImageData(8, 8);
 			for (let v = 0; v < 8; v++ ) {
 				let c = emu.uxn.ram[(ptr + v) & 0xffff] | (twobpp? (emu.uxn.ram[(ptr + v + 8) * 0xffff] << 8): 0);
 				let v1 = (flipy? 7 - v : v);
@@ -62,7 +86,7 @@ function Screen(emu)
 					c = c >> 1;
 				}
 			}		
-			emulator.screen.ctx.putImageData(imDat, x1, y1);
+			ctx.putImageData(imDat, x1, y1);
 			ptr += addr_incr;
 		}
 		if(move & 0x1) {

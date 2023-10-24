@@ -11,7 +11,11 @@
 	<script src="bin/roms.js"></script>
 </head>
 <body>
-	<canvas id='screen'></canvas>
+	<div id="screen" style="position: relative;">
+	 <canvas id="bgcanvas" width="100" height="100"
+	   style="position: absolute; left: 0; top: 0; z-index: 0;"></canvas>
+	 <canvas id="fgcanvas" width="100" height="100"
+	   style="position: absolute; left: 0; top: 0; z-index: 1;"></canvas>
 	<pre id='console_std'></pre>
 	<pre id='console_err'></pre>
 </body>
@@ -20,13 +24,8 @@
 	let emulator = new Emu()
 	emulator.console.write_el = document.getElementById("console_std")
 	emulator.console.error_el = document.getElementById("console_err")
-	emulator.screen.ctx = document.getElementById("screen").getContext("2d")
-
-	// fill canvas black
-	emulator.screen.ctx.canvas.width  = 320
-  	emulator.screen.ctx.canvas.height = 240
-	emulator.screen.ctx.fillStyle = "black"
-    emulator.screen.ctx.fillRect(0, 0, 320, 240)
+	emulator.screen.bgctx = document.getElementById("bgcanvas").getContext("2d")
+	emulator.screen.fgctx = document.getElementById("fgcanvas").getContext("2d")
 
 	// Let's go!
 	function step() {
