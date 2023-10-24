@@ -38,7 +38,7 @@ Then open `uxnemu.html` in a web browser.
 - `80` controller(missing)
 - `90` mouse(missing)
 - `a0` file(missing)
-- `c0` datetime(missing)
+- `c0` datetime(partial)
 
 ## Tests
 

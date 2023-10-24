@@ -6,6 +6,7 @@ function Emu ()
 	this.uxn = new Uxn(this)
 	this.console = new Console(this)
 	this.screen = new Screen(this)
+	this.datetime = new DateTime(this)
 
 	let opcodes = [
 		"LIT", "INC", "POP", "NIP", "SWP", "ROT", "DUP", "OVR",
@@ -38,6 +39,10 @@ function Emu ()
 	}
 
 	this.dei = (port) => {
+		const d = port & 0xf0
+		switch (d) {
+		case 0xc0: return this.datetime.dei(port)
+		}
 		return this.uxn.getdev(port)
 	}
 
