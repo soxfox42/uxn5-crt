@@ -7,6 +7,7 @@ function Emu ()
 	this.console = new Console(this)
 	this.screen = new Screen(this)
 	this.datetime = new DateTime(this)
+	this.mouse= new Mouse(this)
 
 	let opcodes = [
 		"LIT", "INC", "POP", "NIP", "SWP", "ROT", "DUP", "OVR",
@@ -82,6 +83,15 @@ function Emu ()
 			this.screen.draw_sprite(ctrl, x, y, ptr, move);
 			break;
 		}
+	}
+
+	this.pointer_callback = (event) => {
+		const bounds = emulator.bgCanvas.getBoundingClientRect();
+		const x = emulator.bgCanvas.width * (event.clientX - bounds.left) / bounds.width;
+		const y = emulator.bgCanvas.height * (event.clientY - bounds.top) / bounds.height;
+		this.mouse.handle_mouse(x,y, event.buttons)
+		event.preventDefault();
+
 	}
 
 	this.screen_callback = () => {

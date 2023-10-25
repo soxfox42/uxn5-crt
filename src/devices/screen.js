@@ -14,7 +14,6 @@ const blending = [
 function Screen(emu)
 {
 	this.colors = [];
-	this.width, this.height = 0;
 
 	this.blank_screen = () => {
 		emulator.screen.bgctx.fillStyle = "black"

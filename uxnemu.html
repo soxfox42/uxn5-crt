@@ -6,6 +6,7 @@
 	<script src="src/uxn.js"></script>
 	<script src="src/emu.js"></script>
 	<script src="src/devices/console.js"></script>
+	<script src="src/devices/mouse.js"></script>
 	<script src="src/devices/screen.js"></script>
 	<script src="src/devices/datetime.js"></script>
 	<script src="bin/roms.js"></script>
@@ -24,14 +25,21 @@
 	let emulator = new Emu()
 	emulator.console.write_el = document.getElementById("console_std")
 	emulator.console.error_el = document.getElementById("console_err")
-	emulator.screen.bgctx = document.getElementById("bgcanvas").getContext("2d")
-	emulator.screen.fgctx = document.getElementById("fgcanvas").getContext("2d")
+	emulator.bgCanvas = document.getElementById("bgcanvas");
+	emulator.fgCanvas = document.getElementById("bgcanvas");
+	emulator.screen.bgctx = emulator.bgCanvas.getContext("2d")
+	emulator.screen.fgctx = emulator.fgCanvas.getContext("2d")
 
-	// Let's go!
+	emulator.bgCanvas.addEventListener("pointermove", emulator.pointer_callback);
+	emulator.bgCanvas.addEventListener("pointerdown", emulator.pointer_callback);
+	emulator.bgCanvas.addEventListener("pointerup", emulator.pointer_callback);
+	// Animation callback
 	function step() {
 		emulator.screen_callback();
 		window.requestAnimationFrame(step)
 	}
+	emulator.screen.set_width(384);
+	emulator.screen.set_height(256);
 	window.requestAnimationFrame(step);
 	emulator.uxn.load(rom).eval(0x0100);
 </script>
