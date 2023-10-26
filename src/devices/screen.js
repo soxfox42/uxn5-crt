@@ -108,7 +108,7 @@ function Screen(emu)
 							imDat.data[imdati] = c.r << 4;
 							imDat.data[imdati+1] = c.g << 4; 
 							imDat.data[imdati+2] = c.b << 4;
-							imDat.data[imdati+3] = 255; // a
+							imDat.data[imdati+3] = !color && (ctrl & 0x40) ? 0 : 255; // a
 						} else {
 						}
 					}
