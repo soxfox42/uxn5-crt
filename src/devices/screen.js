@@ -142,6 +142,6 @@ function Screen(emu)
 		this.colors[1] = {r: r1 & 0xf, g: g1 & 0xf, b: b1 & 0xf}
 		this.colors[2] = {r: r2 >> 4, g: g2 >> 4, b: b2 >> 4}
 		this.colors[3] = {r: r2 & 0xf, g: g2 & 0xf, b: b2 & 0xf}
-		console.log(this.colors)
+		this.blank_screen()
 	}
 }
