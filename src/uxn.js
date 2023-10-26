@@ -188,6 +188,10 @@ function Uxn (emu)
 	}
 
 	this.load = (program) => {
+		this.ram = new Uint8Array(0x13000)
+		this.wst = new Stack(this, 0x10000)
+		this.rst = new Stack(this, 0x11000)
+		this.dev = 0x12000
 		for (let i = 0; i <= program.length; i++)
 			this.ram[0x100 + i] = program[i];
 		return this

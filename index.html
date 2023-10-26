@@ -45,24 +45,24 @@
 	emulator.uxn.load(rom).eval(0x0100);
 
 	// Support dropping files
+
 	const target = document.body
+
 	target.addEventListener("dragover", (event) => {
 		event.preventDefault();
 	});
 
 	target.addEventListener("drop", (ev) => {
 		ev.preventDefault();
-		if (ev.dataTransfer.items) {
-			[...ev.dataTransfer.items].forEach((item, i) => {
-			// If dropped items aren't files, reject them
-			if (item.kind === "file") {
-				const file = item.getAsFile();
-				console.log(`>> received file[${i}].name = ${file.name}`);
-			}
-			});
-		}
+		let file = ev.dataTransfer.files[0],
+			reader = new FileReader()
+		reader.onload = function (event) {
+			let rom = new Uint8Array(event.target.result)
+			emulator.uxn.load(rom).eval(0x0100)
+			console.log(event.target.result)
+		};
+		reader.readAsArrayBuffer(file)
 	});
-
 </script>
 
 <style>
