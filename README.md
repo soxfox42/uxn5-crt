@@ -20,7 +20,9 @@ Include the boot sequence in your website, and evaluate a program:
 ```
 
 ## Example
+
 An example html page can be found in `uxnemu.html`.
+
 To run a rom in this environment, execute:
 ```
 uxncli bin/format-js.rom [your-rom.rom] > bin/roms.js
