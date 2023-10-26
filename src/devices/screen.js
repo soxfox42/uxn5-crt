@@ -84,7 +84,7 @@ function Screen(emu)
 			let y1 = y + dxy * i;
 			var imDat = ctx.createImageData(8, 8);
 			for (let v = 0; v < 8; v++ ) {
-				let c = emu.uxn.ram[(ptr + v) & 0xffff] | (twobpp? (emu.uxn.ram[(ptr + v + 8) * 0xffff] << 8): 0);
+				let c = emu.uxn.ram[(ptr + v) & 0xffff] | (twobpp? (emu.uxn.ram[(ptr + v + 8) & 0xffff] << 8): 0);
 				let v1 = (flipy? 7 - v : v);
 				for (let h = 7; h >= 0; --h) {
 					let ch = (c & 1) | ((c >> 7) & 2);
