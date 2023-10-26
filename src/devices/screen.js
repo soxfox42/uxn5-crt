@@ -23,17 +23,27 @@ function Screen(emu)
 	// naive functions
 	// assumes that you set height/width on startup (most roms do)
 	this.set_width = (w) => {
-		this.width = w;
 		emulator.screen.fgctx.canvas.width = w;
 		emulator.screen.bgctx.canvas.width = w;
+		this.width = w;
 		this.blank_screen()
 	}
 
 	this.set_height = (h) => {
-		this.height = h;
 		emulator.screen.bgctx.canvas.height = h;
 		emulator.screen.fgctx.canvas.height = h;
+		this.height = h;
 		this.blank_screen()
+	}
+
+	this.dei = (port) => {
+		switch (port) {
+			case 0x22: return this.width >> 8;
+			case 0x23: return this.width & 0xf0;
+			case 0x24: return this.height >> 8;
+			case 0x25: return this.height & 0xf0;
+			default: return emulator.uxn.peek8(emulator.uxn.dev + port) ;
+		}
 	}
 
 	this.draw_pixel = (ctrl,x,y,move) => {
@@ -41,8 +51,8 @@ function Screen(emu)
 		const color = ctrl & 0x3;
 		// fill mode
 		if(ctrl & 0x80) {
-			x2 = this.width
-			y2 = this.height
+			let x2 = this.width
+			let y2 = this.height
 			if(ctrl & 0x10) x2 = x, x = 0;
 			if(ctrl & 0x20) y2 = y, y = 0;
 			ctx.fillStyle = rgbhex(this.colors[color])
@@ -61,10 +71,10 @@ function Screen(emu)
 
 	// TODO cleanup
 	this.draw_sprite = (ctrl, x, y, ptr, move) => {
-		const twobpp = !!(ctrl & 0x80);
+		const twobpp = (ctrl & 0x80);
 		const length = move >> 4;
 		// background or foreground canvas
-		const ctx = ctrl & 0x40 ? emulator.screen.fgctx : emulator.screen.bgctx
+	    const ctx = ctrl & 0x40 ? emulator.screen.fgctx : emulator.screen.bgctx
 		const color = ctrl & 0xf;
 		const width = ctx.canvas.width;
 		const height = ctx.canvas.height;
@@ -82,7 +92,7 @@ function Screen(emu)
 		for (let i = 0; i <= length; i++) {
 			let x1 = x + dyx * i;
 			let y1 = y + dxy * i;
-			var imDat = ctx.createImageData(8, 8);
+			var imDat = ctx.getImageData(x1,y1, 8, 8);
 			for (let v = 0; v < 8; v++ ) {
 				let c = emu.uxn.ram[(ptr + v) & 0xffff] | (twobpp? (emu.uxn.ram[(ptr + v + 8) & 0xffff] << 8): 0);
 				let v1 = (flipy? 7 - v : v);
@@ -90,13 +100,16 @@ function Screen(emu)
 					let ch = (c & 1) | ((c >> 7) & 2);
 					if (opaque || ch) {
 						let h1 = (flipx? 7 - h : h);
+						let imdati = (h1 + v1 * 8) * 4;
 						if (x < width && y < height) {
-							let imdati = (h1 + v1 * 8) * 4;
 							let c = this.colors[blending[ch][color]]
+							// ctx.fillStyle = rgbhex(c);
+							// ctx.fillRect(x + h1, y + v1, 1,1);
 							imDat.data[imdati] = c.r << 4;
 							imDat.data[imdati+1] = c.g << 4; 
 							imDat.data[imdati+2] = c.b << 4;
 							imDat.data[imdati+3] = 255; // a
+						} else {
 						}
 					}
 					c = c >> 1;

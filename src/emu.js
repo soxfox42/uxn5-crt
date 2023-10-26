@@ -43,6 +43,7 @@ function Emu ()
 		const d = port & 0xf0
 		switch (d) {
 		case 0xc0: return this.datetime.dei(port)
+		case 0x20: return this.screen.dei(port)
 		}
 		return this.uxn.getdev(port)
 	}
@@ -71,7 +72,7 @@ function Emu ()
 			x = this.uxn.peek16(this.uxn.dev + 0x28)
 			y = this.uxn.peek16(this.uxn.dev + 0x2a)
 			move = this.uxn.peek8(this.uxn.dev + 0x26)
-			ctrl = this.uxn.peek8(this.uxn.dev + 0x2f)
+			ctrl = this.uxn.peek8(this.uxn.dev + 0x2e)
 			this.screen.draw_pixel(ctrl,x,y, move);
 			break;
 		case 0x2f:
