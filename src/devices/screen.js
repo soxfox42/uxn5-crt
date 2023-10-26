@@ -2,6 +2,7 @@
 
 
 function rgbhex(color) {
+	if(!color) return "#000"
 	return "#" + color.r.toString(16) + color.g.toString(16) + color.b.toString(16);
 }
 
@@ -16,7 +17,7 @@ function Screen(emu)
 	this.colors = [];
 
 	this.blank_screen = () => {
-		emulator.screen.bgctx.fillStyle = "black"
+		emulator.screen.bgctx.fillStyle = rgbhex(this.colors[0])
 		emulator.screen.bgctx.fillRect(0, 0, this.width, this.height)
 	}
 
