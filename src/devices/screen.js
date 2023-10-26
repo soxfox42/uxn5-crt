@@ -103,19 +103,18 @@ function Screen(emu)
 						let h1 = (flipx? 7 - h : h);
 						let imdati = (h1 + v1 * 8) * 4;
 						if (x < width && y < height) {
-							let c = this.colors[blending[ch][color]]
-							// ctx.fillStyle = rgbhex(c);
-							// ctx.fillRect(x + h1, y + v1, 1,1);
-							imDat.data[imdati] = c.r << 4;
+							let b = blending[ch][color]
+							let c = this.colors[b]
+							imDat.data[imdati] = (ctrl & 0x40) ? 0xff : c.r << 4;
 							imDat.data[imdati+1] = c.g << 4; 
 							imDat.data[imdati+2] = c.b << 4;
-							imDat.data[imdati+3] = !color && (ctrl & 0x40) ? 0 : 255; // a
+							imDat.data[imdati+3] = !b && (ctrl & 0x40) ? 0 : 255; // a
 						} else {
 						}
 					}
 					c = c >> 1;
 				}
-			}		
+			}	
 			ctx.putImageData(imDat, x1, y1);
 			ptr += addr_incr;
 		}

@@ -3,13 +3,13 @@
 function Mouse(emu) {
 	this.dev = emu.uxn.dev + 0x90
 
-	this.down = (mask) => {
-		emu.uxn.poke8(this.dev + 6, mask)
+	this.down = (state) => {
+		emu.uxn.poke8(this.dev + 6, state)
 		emu.uxn.eval(emu.uxn.peek16(this.dev))
 	}
 
-	this.up = (mask) => {
-		emu.uxn.poke8(this.dev + 6, mask)
+	this.up = (state) => {
+		emu.uxn.poke8(this.dev + 6, state)
 		emu.uxn.eval(emu.uxn.peek16(this.dev))
 	}
 
