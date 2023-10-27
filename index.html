@@ -10,7 +10,6 @@
 	<script src="src/devices/mouse.js"></script>
 	<script src="src/devices/screen.js"></script>
 	<script src="src/devices/datetime.js"></script>
-	<script src="bin/roms.js"></script>
 </head>
 <body>
 	<div id="screen" style="position: relative;">
@@ -48,7 +47,6 @@
 	emulator.screen.set_width(512);
 	emulator.screen.set_height(320);
 	window.requestAnimationFrame(step);
-	emulator.uxn.load(rom).eval(0x0100);
 
 	// Support dropping files
 
