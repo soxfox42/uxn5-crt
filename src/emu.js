@@ -3,7 +3,14 @@
 function Emu ()
 {
 	this.debug = 0
-	this.uxn = new Uxn(this)
+	if (typeof UxnWASM !== 'undefined') {
+		console.log("Using WebAssembly core")
+		this.uxn = new UxnWASM(this)
+	} else {
+		console.log("Using Vanilla JS core")
+		this.uxn = new Uxn(this)
+	}
+	this.uxn = typeof UxnWASM !== 'undefined' ? new UxnWASM(this) : new Uxn(this)
 	this.console = new Console(this)
 	this.controller = new Controller(this)
 	this.screen = new Screen(this)
