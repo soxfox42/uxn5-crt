@@ -5,6 +5,7 @@ function Emu ()
 	this.debug = 0
 	this.uxn = new Uxn(this)
 	this.console = new Console(this)
+	this.controller = new Controller(this)
 	this.screen = new Screen(this)
 	this.datetime = new DateTime(this)
 	this.mouse= new Mouse(this)
