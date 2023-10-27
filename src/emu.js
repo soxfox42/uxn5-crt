@@ -108,4 +108,8 @@ function Emu ()
 	this.screen_callback = () => {
 		this.uxn.eval(this.uxn.peek16(this.uxn.dev + 0x20))
 	}
+
+	this.init = () => {
+		return this.uxn.init(this);
+	}
 }

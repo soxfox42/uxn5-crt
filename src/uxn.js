@@ -212,6 +212,8 @@ function Uxn (emu)
 		this.pc = 0x0000
 	}
 
+	this.init = () => { return Promise.resolve(); }
+
 	function rel(val) {
 		return (val > 0x80 ? val - 256 : val)
 	}
