@@ -105,10 +105,10 @@ function Screen(emu)
 						if (x < width && y < height) {
 							let b = blending[ch][color]
 							let c = this.colors[b]
-							imDat.data[imdati] = (ctrl & 0x40) ? 0xff : c.r << 4;
+							imDat.data[imdati] = c.r << 4;
 							imDat.data[imdati+1] = c.g << 4; 
 							imDat.data[imdati+2] = c.b << 4;
-							imDat.data[imdati+3] = !b && (ctrl & 0x40) ? 0 : 255; // a
+							imDat.data[imdati+3] = (!b && (ctrl & 0x40)) ? 0 : 255; // a
 						} else {
 						}
 					}
