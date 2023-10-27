@@ -37,7 +37,7 @@ Then open `uxnemu.html` in a web browser.
 - `20` screen(partial)
 - `30` audio(missing)
 - `70` midi(missing)
-- `80` controller(missing)
+- `80` controller(partial)
 - `90` mouse(partial)
 - `a0` file(missing)
 - `c0` datetime(partial)
