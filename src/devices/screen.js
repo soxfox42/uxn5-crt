@@ -54,27 +54,23 @@ function Screen(emu)
 		const dy = (move & 0x2) << 2, dyx = dy * fx;
 		const addr_incr = (move & 0x4) << (1 + twobpp);
 		for (let i = 0; i <= length; i++) {
-			let x1 = x + dyx * i;
-			let y1 = y + dxy * i;
+			let x1 = x + dyx * i
+			let y1 = y + dxy * i
 			var imDat = ctx.getImageData(x1,y1, 8, 8);
-			for (let v = 0; v < 8; v++ ) {
+			for (let v = 0; v < 8; v++) {
 				let c = emu.uxn.ram[(ptr + v) & 0xffff] | (twobpp? (emu.uxn.ram[(ptr + v + 8) & 0xffff] << 8): 0);
-				let v1 = (flipy? 7 - v : v);
-				for (let h = 7; h >= 0; --h) {
-					let ch = (c & 1) | ((c >> 7) & 2);
+				let v1 = (flipy ? 7 - v : v)
+				for (let h = 7; h >= 0; --h, c >>= 1) {
+					let ch = (c & 1) | ((c >> 7) & 2)
 					if (opaque || ch) {
-						let h1 = (flipx? 7 - h : h);
-						let imdati = (h1 + v1 * 8) * 4;
-						if (x < width && y < height) {
-							let b = blending[ch][color]
-							let c = this.colors[b]
-							imDat.data[imdati] = c.r;
-							imDat.data[imdati+1] = c.g; 
-							imDat.data[imdati+2] = c.b;
-							imDat.data[imdati+3] = (!b && (ctrl & 0x40)) ? 0 : 255; // a
-						}
+						let imdati = ((flipx ? 7 - h : h) + v1 * 8) * 4;
+						let b = blending[ch][color]
+						let c = this.colors[b]
+						imDat.data[imdati] = c.r
+						imDat.data[imdati+1] = c.g
+						imDat.data[imdati+2] = c.b
+						imDat.data[imdati+3] = (!b && (ctrl & 0x40)) ? 0 : 255 // alpha
 					}
-					c = c >> 1;
 				}
 			}	
 			ctx.putImageData(imDat, x1, y1);
