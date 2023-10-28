@@ -17,6 +17,7 @@
 		<canvas id="bgcanvas" width="100" height="100"></canvas>
 		<canvas id="fgcanvas" width="100" height="100"></canvas>
 	</div>
+	<div id='metadata'>Drag rom on window to start</div>
 	<input type="text" id="console_input" placeholder="Console">
 	<pre id='console_std'></pre>
 	<pre id='console_err'></pre>
@@ -45,8 +46,8 @@
 			if (event.key === "Enter") {
 				let query = console_input.value
 				for (let i = 0; i < query.length; i++)
-					emulator.console.input(query.charAt(i).charCodeAt(0))
-				emulator.console.input(0x0a)
+					emulator.console.input(query.charAt(i).charCodeAt(0), 1)
+				emulator.console.input(0x0a, 1)
 				console_input.value = ""
 			}
 		});
@@ -91,9 +92,10 @@
 	div#stack { width:100%; height:25px; background:#72dec2; padding:10px; margin-bottom:20px;font-weight:bold; display:none }
 	body.active textarea { height:calc(100% - 140px) }
 	body.active div#term, body.active div#stack { display:block }
-	#screen { image-rendering: pixelated; image-rendering: crisp-edges; cursor: none; touch-action: none; margin-bottom: 30px }
+	#screen { image-rendering: pixelated; image-rendering: crisp-edges; cursor: none; touch-action: none; margin-bottom: 15px }
 	#screen #bgcanvas { position: relative; display:block; left: 0; top: 0; z-index: 0; border: 2px solid #000 }
 	#screen #fgcanvas { position: absolute; left: 0; top: 0; z-index: 1 }
+	#metadata { margin-bottom: 15px }
 	#console_err { color:red; font-weight:bold }
 </style>
 

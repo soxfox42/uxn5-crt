@@ -13,11 +13,13 @@ function Console(emu)
 		this.error_el.innerHTML += String.fromCharCode(char)
 	}
 
-	this.input = (char) => {
+	this.input = (char, type) => {
 		// Get vector
 		let vec = emu.uxn.peek16(emu.uxn.dev + 0x10)
 		// Set char
 		emu.uxn.poke8(emu.uxn.dev + 0x12, char)
+		// Set type
+		emu.uxn.poke8(emu.uxn.dev + 0x17, type)
 		if(vec)
 			emu.uxn.eval(vec)
 	}

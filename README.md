@@ -33,12 +33,11 @@ Then open `uxnemu.html` in a web browser.
 ## Devices
 
 - `00` system(missing)
-- `10` console(partial)
-- `20` screen(partial)
+- `10` console(complete)
+- `20` screen(complete)
 - `30` audio(missing)
-- `70` midi(missing)
 - `80` controller(partial)
-- `90` mouse(partial)
+- `90` mouse(complete)
 - `a0` file(missing)
 - `c0` datetime(partial)
 
