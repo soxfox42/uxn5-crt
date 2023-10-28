@@ -2,7 +2,6 @@
 
 function Emu ()
 {
-	this.debug = 0
 	if (typeof UxnWASM !== 'undefined') {
 		console.log("Using WebAssembly core")
 		this.uxn = new UxnWASM(this)
@@ -16,36 +15,6 @@ function Emu ()
 	this.screen = new Screen(this)
 	this.datetime = new DateTime(this)
 	this.mouse= new Mouse(this)
-
-	let opcodes = [
-		"LIT", "INC", "POP", "NIP", "SWP", "ROT", "DUP", "OVR",
-		"EQU", "NEQ", "GTH", "LTH", "JMP", "JCN", "JSR", "STH",
-		"LDZ", "STZ", "LDR", "STR", "LDA", "STA", "DEI", "DEO",
-		"ADD", "SUB", "MUL", "DIV", "AND", "ORA", "EOR", "SFT",
-		"BRK"]
-
-	function getname(byte) {
-		let m2 = !!(byte & 0x20) ? "2" : ""
-		let mr = !!(byte & 0x40) ? "r" : ""
-		let mk = !!(byte & 0x80) ? "k" : ""
-		return opcodes[byte & 0x1f] + m2 + mk + mr
-	}
-
-	this.debugger = () => {
-		if(!this.uxn.wst.ptr())
-			console.log("Stack is clean")
-		// Stack
-		let buf = ""
-		for (let i = 0; i < this.uxn.wst.ptr(); i++) {
-			buf += this.uxn.wst.get(i).toString(16)+" "
-		}
-		console.warn(buf)
-	}
-
-	this.onStep = (pc, instr) => {
-		if(this.debug)
-			console.log(getname(instr), pc)
-	}
 
 	this.dei = (port) => {
 		const d = port & 0xf0

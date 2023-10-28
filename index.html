@@ -24,7 +24,7 @@
 </body>
 <script type="text/javascript">
 	'use strict'
-	let emulator = new Emu()
+	const emulator = new Emu()
 	emulator.init().then(() => {
 		emulator.console.write_el = document.getElementById("console_std")
 		emulator.console.error_el = document.getElementById("console_err")
@@ -40,8 +40,7 @@
 
 		// Input box
 
-		let console_input = document.getElementById("console_input")
-
+		const console_input = document.getElementById("console_input")
 		console_input.addEventListener("keyup", function(event) {
 			if (event.key === "Enter") {
 				let query = console_input.value
@@ -65,11 +64,9 @@
 		// Support dropping files
 
 		const target = document.body
-
 		target.addEventListener("dragover", (event) => {
 			event.preventDefault();
 		});
-
 		target.addEventListener("drop", (ev) => {
 			ev.preventDefault();
 			let file = ev.dataTransfer.files[0],

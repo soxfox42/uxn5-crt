@@ -13,7 +13,7 @@ function Screen(emu)
 	this.colors = [{r: 0, g: 0, b:0}];
 
 	this.blank_screen = () => {
-		let c = this.colors[0]
+		const c = this.colors[0]
 		emulator.screen.bgctx.fillStyle = "rgba("+c.r.toString(10)+","+c.g.toString(10)+","+c.b.toString(10)+")"
 		emulator.screen.bgctx.fillRect(0, 0, this.width, this.height)
 	}
@@ -22,18 +22,17 @@ function Screen(emu)
 		const ctx = ctrl & 0x40 ? emulator.screen.fgctx : emulator.screen.bgctx
 		const color = ctrl & 0x3
 		const c = this.colors[color]
+		ctx.fillStyle = "rgba("+c.r.toString(10)+","+c.g.toString(10)+","+c.b.toString(10)+")"
 		// fill mode
 		if(ctrl & 0x80) {
 			let x2 = this.width
 			let y2 = this.height
 			if(ctrl & 0x10) x2 = x, x = 0
 			if(ctrl & 0x20) y2 = y, y = 0
-			ctx.fillStyle = "rgba("+c.r.toString(10)+","+c.g.toString(10)+","+c.b.toString(10)+")"
 			ctx.fillRect(x, y, x2 - x, y2 - y)
 		}
 		// pixel mode
 		else {
-			ctx.fillStyle = "rgba("+c.r.toString(10)+","+c.g.toString(10)+","+c.b.toString(10)+")"
 			ctx.fillRect(x, y, 1, 1)
 		}
 		if (move & 0x1) 
