@@ -19,9 +19,9 @@ function Screen(emu)
 	this.draw_fill = (ctx, w, h, x, y, r, g, b, a) => {
 		let img = ctx.createImageData(w, h)
 		for (let i = 0; i < img .data.length; i += 4) {
-			img.data[i+0] = r << 4;
-			img.data[i+1] = g << 4;
-			img.data[i+2] = b << 4;
+			img.data[i+0] = r;
+			img.data[i+1] = g;
+			img.data[i+2] = b;
 			img.data[i+3] = a;
 		}
 		ctx.putImageData(img, x, y);
@@ -81,9 +81,9 @@ function Screen(emu)
 						if (x < width && y < height) {
 							let b = blending[ch][color]
 							let c = this.colors[b]
-							imDat.data[imdati] = c.r << 4;
-							imDat.data[imdati+1] = c.g << 4; 
-							imDat.data[imdati+2] = c.b << 4;
+							imDat.data[imdati] = c.r;
+							imDat.data[imdati+1] = c.g; 
+							imDat.data[imdati+2] = c.b;
 							imDat.data[imdati+3] = (!b && (ctrl & 0x40)) ? 0 : 255; // a
 						} else {
 						}
@@ -148,10 +148,10 @@ function Screen(emu)
 		let g2 = emu.uxn.ram[emu.uxn.dev + 0xb]
 		let b1 = emu.uxn.ram[emu.uxn.dev + 0xc]
 		let b2 = emu.uxn.ram[emu.uxn.dev + 0xd]
-		this.colors[0] = {r: r1 >> 4, g: g1 >> 4, b: b1 >> 4}
-		this.colors[1] = {r: r1 & 0xf, g: g1 & 0xf, b: b1 & 0xf}
-		this.colors[2] = {r: r2 >> 4, g: g2 >> 4, b: b2 >> 4}
-		this.colors[3] = {r: r2 & 0xf, g: g2 & 0xf, b: b2 & 0xf}
+		this.colors[0] = {r: (r1 >> 4) << 4, g: (g1 >> 4) << 4, b: (b1 >> 4) << 4}
+		this.colors[1] = {r: (r1 & 0xf) << 4, g: (g1 & 0xf) << 4, b: (b1 & 0xf) << 4}
+		this.colors[2] = {r: (r2 >> 4) << 4, g: (g2 >> 4) << 4, b: (b2 >> 4) << 4}
+		this.colors[3] = {r: (r2 & 0xf) << 4, g: (g2 & 0xf) << 4, b: (b2 & 0xf) << 4}
 		this.blank_screen()
 	}
 }
