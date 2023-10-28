@@ -42,7 +42,7 @@ function Screen(emu)
 	}
 
 	this.draw_sprite = (ctrl, x, y, ptr, move) => {
-		const twobpp = (ctrl & 0x80);
+		const twobpp = !!(ctrl & 0x80);
 		const length = move >> 4;
 	    const ctx = ctrl & 0x40 ? emulator.screen.fgctx : emulator.screen.bgctx
 		const color = ctrl & 0xf;
