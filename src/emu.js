@@ -80,15 +80,15 @@ function Emu ()
 		case 0x2e: 
 			x = peek16(this.uxn.ram, this.uxn.dev + 0x28)
 			y = peek16(this.uxn.ram, this.uxn.dev + 0x2a)
-			move = peek8(this.uxn.ram, this.uxn.dev + 0x26)
-			ctrl = peek8(this.uxn.ram, this.uxn.dev + 0x2e)
+			move = this.uxn.ram[this.uxn.dev + 0x26]
+			ctrl = this.uxn.ram[this.uxn.dev + 0x2e]
 			this.screen.draw_pixel(ctrl,x,y, move);
 			break;
 		case 0x2f:
 			x = peek16(this.uxn.ram, this.uxn.dev + 0x28)
 			y = peek16(this.uxn.ram, this.uxn.dev + 0x2a)
-			move = peek8(this.uxn.ram, this.uxn.dev + 0x26)
-			ctrl = peek8(this.uxn.ram, this.uxn.dev + 0x2f)
+			move = this.uxn.ram[this.uxn.dev + 0x26]
+			ctrl = this.uxn.ram[this.uxn.dev + 0x2f]
 			let ptr = peek16(this.uxn.ram, this.uxn.dev + 0x2c)
 			this.screen.draw_sprite(ctrl, x, y, ptr, move);
 			break;
@@ -122,16 +122,8 @@ function Emu ()
 	}
 }
 
-function peek8(mem, addr) {
-	return mem[addr];
-}
-
 function peek16(mem, addr) {
 	return (mem[addr] << 8) + mem[addr + 1]
-}
-
-function poke8(mem, addr, val) {
-	mem[addr] = val
 }
 
 function poke16(mem, addr, val) {
