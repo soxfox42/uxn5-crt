@@ -1,21 +1,19 @@
 'use strict'
 
 function Mouse(emu) {
-	this.dev = emu.uxn.dev + 0x90
-
 	this.down = (state) => {
-		emu.uxn.ram[this.dev + 6] = state
-		emu.uxn.eval(peek16(emu.uxn.ram, this.dev))
+		emu.uxn.dev[0x96] = state
+		emu.uxn.eval(peek16(emu.uxn.dev, 0x90))
 	}
 
 	this.up = (state) => {
-		emu.uxn.ram[this.dev + 6] = state
-		emu.uxn.eval(peek16(emu.uxn.ram, this.dev))
+		emu.uxn.dev[0x96] = state
+		emu.uxn.eval(peek16(emu.uxn.dev, 0x90))
 	}
 
 	this.move = (x, y) => {
-		emu.uxn.poke16(this.dev + 2, x)
-		emu.uxn.poke16(this.dev + 4, y)
-		emu.uxn.eval(peek16(emu.uxn.ram, this.dev))
+		poke16(emu.uxn.dev, 0x92, x)
+		poke16(emu.uxn.dev, 0x94, y)
+		emu.uxn.eval(peek16(emu.uxn.dev, 0x90))
 	}
 }

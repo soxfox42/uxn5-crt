@@ -1,7 +1,6 @@
 'use strict'
 
 function Controller(emu) {
-	this.dev = emu.uxn.dev + 0x80
 	this.keys = 0
 
 	this.keyevent = (event) => {
@@ -43,9 +42,9 @@ function Controller(emu) {
 		} else {
 			this.keys &= ~mask;
 		}
-		// console.log("keydown", event.key, (this.dev + 3).toString(16));
-		emu.uxn.ram[this.dev + 2] = this.keys;
-		emu.uxn.ram[this.dev + 3] = charCode;
-		emu.uxn.eval(peek16(emu.uxn.ram, this.dev))
+		// console.log("keydown", event.key, (0x83).toString(16));
+		emu.uxn.dev[0x82] = this.keys;
+		emu.uxn.dev[0x83] = charCode;
+		emu.uxn.eval(peek16(emu.uxn.dev, 0x80))
 	}
 }

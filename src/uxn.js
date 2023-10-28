@@ -42,10 +42,14 @@ function Stack(u, addr)
 
 function Uxn (emu)
 {
-	this.ram = new Uint8Array(0x13000)
-	this.wst = new Stack(this, 0x10000)
-	this.rst = new Stack(this, 0x11000)
-	this.dev = 0x12000
+	const resetData = () => {
+		this.data = new ArrayBuffer(0x13000)
+		this.ram = new Uint8Array(this.data, 0x0, 0x13000)
+		this.dev = new Uint8Array(this.data, 0x12000, 0x100)
+		this.wst = new Stack(this, 0x10000)
+		this.rst = new Stack(this, 0x11000)
+	}
+	resetData()
 
 	this.pop = () => {
 		return this.r2 ? this.src.pop16() : this.src.pop8()
@@ -185,10 +189,7 @@ function Uxn (emu)
 	}
 
 	this.load = (program) => {
-		this.ram = new Uint8Array(0x13000)
-		this.wst = new Stack(this, 0x10000)
-		this.rst = new Stack(this, 0x11000)
-		this.dev = 0x12000
+		resetData()
 		for (let i = 0; i <= program.length; i++)
 			this.ram[0x100 + i] = program[i];
 		return this
@@ -201,7 +202,7 @@ function Uxn (emu)
 	]
 
 	this.halt = (err) => {
-		let vec = this.peek16(emu.uxn.dev)
+		let vec = peek16(emu.uxn.dev, 0)
 		if(vec)
 			this.eval(vec)
 		else

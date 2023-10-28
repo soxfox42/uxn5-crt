@@ -44,9 +44,9 @@ function Screen(emu)
 			this.draw_fill(ctx, 1, 1, x, y, c.r, c.g, c.b, 255)
 		}
 		if (move & 0x1) 
-			emu.uxn.poke16(emu.uxn.dev + 0x28, x + 1);
+			poke16(emu.uxn.dev, 0x28, x + 1);
 		if (move & 0x2) 
-			emu.uxn.poke16(emu.uxn.dev + 0x2a, y + 1);
+			poke16(emu.uxn.dev, 0x2a, y + 1);
 	}
 
 	this.draw_sprite = (ctrl, x, y, ptr, move) => {
@@ -96,14 +96,14 @@ function Screen(emu)
 		}
 		if(move & 0x1) {
 			x = x + dx * fx;
-			emu.uxn.poke16(emu.uxn.dev + 0x28, x);
+			poke16(emu.uxn.dev, 0x28, x);
 		}
 		if(move & 0x2) {
 			y = y + dy * fy;
-			emu.uxn.poke16(emu.uxn.dev + 0x2a, y);
+			poke16(emu.uxn.dev, 0x2a, y);
 		}
 		if(move & 0x4) {
-			emu.uxn.poke16(emu.uxn.dev + 0x2c, ptr);
+			poke16(emu.uxn.dev, 0x2c, ptr);
 		}
 	}
 
@@ -137,17 +137,17 @@ function Screen(emu)
 			case 0x23: return this.width & 0xf0;
 			case 0x24: return this.height >> 8;
 			case 0x25: return this.height & 0xf0;
-			default: return emulator.uxn.ram[emulator.uxn.dev + port];
+			default: return emulator.uxn.dev[port];
 		}
 	}
 
 	this.update_palette = () => {
-		let r1 = emu.uxn.ram[emu.uxn.dev + 0x8]
-		let r2 = emu.uxn.ram[emu.uxn.dev + 0x9]
-		let g1 = emu.uxn.ram[emu.uxn.dev + 0xa]
-		let g2 = emu.uxn.ram[emu.uxn.dev + 0xb]
-		let b1 = emu.uxn.ram[emu.uxn.dev + 0xc]
-		let b2 = emu.uxn.ram[emu.uxn.dev + 0xd]
+		let r1 = emu.uxn.dev[0x8]
+		let r2 = emu.uxn.dev[0x9]
+		let g1 = emu.uxn.dev[0xa]
+		let g2 = emu.uxn.dev[0xb]
+		let b1 = emu.uxn.dev[0xc]
+		let b2 = emu.uxn.dev[0xd]
 		this.colors[0] = {r: (r1 >> 4) << 4, g: (g1 >> 4) << 4, b: (b1 >> 4) << 4}
 		this.colors[1] = {r: (r1 & 0xf) << 4, g: (g1 & 0xf) << 4, b: (b1 & 0xf) << 4}
 		this.colors[2] = {r: (r2 >> 4) << 4, g: (g2 >> 4) << 4, b: (b2 >> 4) << 4}

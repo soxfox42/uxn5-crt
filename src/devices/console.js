@@ -15,11 +15,11 @@ function Console(emu)
 
 	this.input = (char, type) => {
 		// Get vector
-		let vec = peek16(emu.uxn.ram, emu.uxn.dev + 0x10)
+		let vec = peek16(emu.uxn.dev, 0x10)
 		// Set char
-		emu.uxn.ram[emu.uxn.dev + 0x12] = char
+		emu.uxn.dev[0x12] = char
 		// Set type
-		emu.uxn.ram[emu.uxn.dev + 0x17] = type
+		emu.uxn.dev[0x17] = type
 		if(vec)
 			emu.uxn.eval(vec)
 	}
