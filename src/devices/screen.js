@@ -45,18 +45,13 @@ function Screen(emu)
 		const twobpp = !!(ctrl & 0x80);
 		const length = move >> 4;
 	    const ctx = ctrl & 0x40 ? emulator.screen.fgctx : emulator.screen.bgctx
-		const color = ctrl & 0xf;
+		const color = ctrl & 0xf, opaque = color % 5;
 		const width = ctx.canvas.width;
 		const height = ctx.canvas.height;
-		const opaque = color % 5;
-		const flipx = (ctrl & 0x10);
-		const fx = flipx ? -1 : 1;
-		const flipy = (ctrl & 0x20);
-		const fy = flipy ? -1 : 1;
-		const dx = (move & 0x1) << 3;
-		const dxy = dx * fy;
-		const dy = (move & 0x2) << 2;
-		const dyx = dy * fx;
+		const flipx = (ctrl & 0x10), fx = flipx ? -1 : 1;
+		const flipy = (ctrl & 0x20), fy = flipy ? -1 : 1;
+		const dx = (move & 0x1) << 3, dxy = dx * fy;
+		const dy = (move & 0x2) << 2, dyx = dy * fx;
 		const addr_incr = (move & 0x4) << (1 + twobpp);
 		for (let i = 0; i <= length; i++) {
 			let x1 = x + dyx * i;
@@ -77,7 +72,6 @@ function Screen(emu)
 							imDat.data[imdati+1] = c.g; 
 							imDat.data[imdati+2] = c.b;
 							imDat.data[imdati+3] = (!b && (ctrl & 0x40)) ? 0 : 255; // a
-						} else {
 						}
 					}
 					c = c >> 1;
