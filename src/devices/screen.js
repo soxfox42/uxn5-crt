@@ -107,8 +107,6 @@ function Screen(emu)
 		}
 	}
 
-	// naive functions
-	// assumes that you set height/width on startup (most roms do)
 	this.set_width = (w) => {
 		emulator.screen.fgctx.canvas.width = w;
 		emulator.screen.bgctx.canvas.width = w;
