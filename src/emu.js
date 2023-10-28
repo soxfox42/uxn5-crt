@@ -73,22 +73,22 @@ function Emu ()
 		case 0x19: this.console.error(val); break;
 		// Screen
 		case 0x22, 0x23: 
-			this.screen.set_width(this.uxn.peek16(this.uxn.dev + 0x22)); break;
+			this.screen.set_width(peek16(this.uxn.ram, this.uxn.dev + 0x22)); break;
 		case 0x24, 0x25: 
-			this.screen.set_height(this.uxn.peek16(this.uxn.dev + 0x24)); break;
+			this.screen.set_height(peek16(this.uxn.ram, this.uxn.dev + 0x24)); break;
 		case 0x2e: 
-			x = this.uxn.peek16(this.uxn.dev + 0x28)
-			y = this.uxn.peek16(this.uxn.dev + 0x2a)
-			move = this.uxn.peek8(this.uxn.dev + 0x26)
-			ctrl = this.uxn.peek8(this.uxn.dev + 0x2e)
+			x = peek16(this.uxn.ram, this.uxn.dev + 0x28)
+			y = peek16(this.uxn.ram, this.uxn.dev + 0x2a)
+			move = peek8(this.uxn.ram, this.uxn.dev + 0x26)
+			ctrl = peek8(this.uxn.ram, this.uxn.dev + 0x2e)
 			this.screen.draw_pixel(ctrl,x,y, move);
 			break;
 		case 0x2f:
-			x = this.uxn.peek16(this.uxn.dev + 0x28)
-			y = this.uxn.peek16(this.uxn.dev + 0x2a)
-			move = this.uxn.peek8(this.uxn.dev + 0x26)
-			ctrl = this.uxn.peek8(this.uxn.dev + 0x2f)
-			let ptr = this.uxn.peek16(this.uxn.dev + 0x2c)
+			x = peek16(this.uxn.ram, this.uxn.dev + 0x28)
+			y = peek16(this.uxn.ram, this.uxn.dev + 0x2a)
+			move = peek8(this.uxn.ram, this.uxn.dev + 0x26)
+			ctrl = peek8(this.uxn.ram, this.uxn.dev + 0x2f)
+			let ptr = peek16(this.uxn.ram, this.uxn.dev + 0x2c)
 			this.screen.draw_sprite(ctrl, x, y, ptr, move);
 			break;
 		}
@@ -113,10 +113,28 @@ function Emu ()
 	}
 
 	this.screen_callback = () => {
-		this.uxn.eval(this.uxn.peek16(this.uxn.dev + 0x20))
+		this.uxn.eval(peek16(this.uxn.ram, this.uxn.dev + 0x20))
 	}
 
 	this.init = () => {
 		return this.uxn.init(this);
 	}
 }
+
+function peek8(mem, addr) {
+	return mem[addr];
+}
+
+function peek16(mem, addr) {
+	return (mem[addr] << 8) + mem[addr + 1]
+}
+
+function poke8(mem, addr, val) {
+	mem[addr] = val
+}
+
+function poke16(mem, addr, val) {
+	mem[addr] = val >> 8;
+	mem[addr + 1] = val;
+}
+

@@ -137,7 +137,7 @@ function Screen(emu)
 			case 0x23: return this.width & 0xf0;
 			case 0x24: return this.height >> 8;
 			case 0x25: return this.height & 0xf0;
-			default: return emulator.uxn.peek8(emulator.uxn.dev + port) ;
+			default: return peek8(emulator.uxn.ram, emulator.uxn.dev + port) ;
 		}
 	}
 
