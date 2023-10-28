@@ -14,12 +14,12 @@ function Screen(emu)
 
 	this.blank_screen = () => {
 		const c = this.colors[0]
-		emulator.screen.bgctx.fillStyle = "rgba("+c.r.toString(10)+","+c.g.toString(10)+","+c.b.toString(10)+")"
-		emulator.screen.bgctx.fillRect(0, 0, this.width, this.height)
+		this.bgctx.fillStyle = "rgba("+c.r.toString(10)+","+c.g.toString(10)+","+c.b.toString(10)+")"
+		this.bgctx.fillRect(0, 0, this.width, this.height)
 	}
 
 	this.draw_pixel = (ctrl,x,y,move) => {
-		const ctx = ctrl & 0x40 ? emulator.screen.fgctx : emulator.screen.bgctx
+		const ctx = ctrl & 0x40 ? this.fgctx : this.bgctx
 		const color = ctrl & 0x3
 		const c = this.colors[color]
 		ctx.fillStyle = "rgba("+c.r.toString(10)+","+c.g.toString(10)+","+c.b.toString(10)+")"
@@ -41,10 +41,10 @@ function Screen(emu)
 			poke16(emu.uxn.dev, 0x2a, y + 1);
 	}
 
-	this.draw_sprite = (ctrl, x, y, ptr, move) => {
+	this.draw_sprite = (ctrl, x, y, move, ptr) => {
 		const twobpp = !!(ctrl & 0x80);
 		const length = move >> 4;
-	    const ctx = ctrl & 0x40 ? emulator.screen.fgctx : emulator.screen.bgctx
+	    const ctx = ctrl & 0x40 ? this.fgctx : this.bgctx
 		const color = ctrl & 0xf, opaque = color % 5;
 		const width = ctx.canvas.width;
 		const height = ctx.canvas.height;
@@ -90,24 +90,24 @@ function Screen(emu)
 	}
 
 	this.set_width = (w) => {
-		emulator.screen.fgctx.canvas.width = w;
-		emulator.screen.bgctx.canvas.width = w;
+		this.fgctx.canvas.width = w;
+		this.bgctx.canvas.width = w;
 		this.width = w;
 		this.blank_screen()
 	}
 
 	this.set_height = (h) => {
-		emulator.screen.bgctx.canvas.height = h;
-		emulator.screen.fgctx.canvas.height = h;
+		this.bgctx.canvas.height = h;
+		this.fgctx.canvas.height = h;
 		this.height = h;
 		this.blank_screen()
 	}
 
 	this.set_size = (w, h) => {
-		emulator.screen.fgctx.canvas.width = w;
-		emulator.screen.bgctx.canvas.width = w;
-		emulator.screen.bgctx.canvas.height = h;
-		emulator.screen.fgctx.canvas.height = h;
+		this.fgctx.canvas.width = w;
+		this.bgctx.canvas.width = w;
+		this.bgctx.canvas.height = h;
+		this.fgctx.canvas.height = h;
 		this.width = w;
 		this.height = h;
 		this.blank_screen()

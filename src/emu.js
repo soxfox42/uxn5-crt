@@ -22,13 +22,11 @@ function Emu ()
 		case 0xc0: return this.datetime.dei(port)
 		case 0x20: return this.screen.dei(port)
 		}
-
 		return this.uxn.dev[port]
 	}
 
 	this.deo = (port, val) => {
 		this.uxn.dev[port] = val
-		let x, y, move, ctrl = 0;
 		switch(port) {
 		// System
 		case 0x08:
@@ -43,24 +41,26 @@ function Emu ()
 		case 0x19: this.console.error(val); break;
 		// Screen
 		case 0x22, 0x23: 
-			this.screen.set_width(peek16(this.uxn.dev, 0x22)); break;
+			this.screen.set_width(peek16(this.uxn.dev, 0x22));
+			break;
 		case 0x24, 0x25: 
-			this.screen.set_height(peek16(this.uxn.dev, 0x24)); break;
-		case 0x2e: 
-			x = peek16(this.uxn.dev, 0x28)
-			y = peek16(this.uxn.dev, 0x2a)
-			move = this.uxn.dev[0x26]
-			ctrl = this.uxn.dev[0x2e]
-			this.screen.draw_pixel(ctrl,x,y, move);
+			this.screen.set_height(peek16(this.uxn.dev, 0x24));
 			break;
-		case 0x2f:
-			x = peek16(this.uxn.dev, 0x28)
-			y = peek16(this.uxn.dev, 0x2a)
-			move = this.uxn.dev[0x26]
-			ctrl = this.uxn.dev[0x2f]
-			let ptr = peek16(this.uxn.dev, 0x2c)
-			this.screen.draw_sprite(ctrl, x, y, ptr, move);
-			break;
+		case 0x2e: {
+			const x = peek16(this.uxn.dev, 0x28)
+			const y = peek16(this.uxn.dev, 0x2a)
+			const move = this.uxn.dev[0x26]
+			const ctrl = this.uxn.dev[0x2e]
+			this.screen.draw_pixel(ctrl, x, y, move);
+			break; }
+		case 0x2f: {
+			const x = peek16(this.uxn.dev, 0x28)
+			const y = peek16(this.uxn.dev, 0x2a)
+			const move = this.uxn.dev[0x26]
+			const ctrl = this.uxn.dev[0x2f]
+			const ptr = peek16(this.uxn.dev, 0x2c)
+			this.screen.draw_sprite(ctrl, x, y, move, ptr);
+			break; }
 		}
 	}
 
