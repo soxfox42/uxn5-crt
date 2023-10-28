@@ -13,18 +13,12 @@ function Screen(emu)
 	this.colors = [{r: 0, g: 0, b:0}];
 
 	this.blank_screen = () => {
-		this.draw_fill(emulator.screen.bgctx, this.width, this.height, 0, 0, this.colors[0].r, this.colors[0].g, this.colors[0].b, 255)
+		this.draw_rect(emulator.screen.bgctx, this.width, this.height, 0, 0, this.colors[0].r, this.colors[0].g, this.colors[0].b, 255)
 	}
 
-	this.draw_fill = (ctx, w, h, x, y, r, g, b, a) => {
-		let img = ctx.createImageData(w, h)
-		for (let i = 0; i < img .data.length; i += 4) {
-			img.data[i+0] = r;
-			img.data[i+1] = g;
-			img.data[i+2] = b;
-			img.data[i+3] = a;
-		}
-		ctx.putImageData(img, x, y);
+	this.draw_rect = (ctx, w, h, x, y, r, g, b, a) => {
+		ctx.fillStyle = "rgba("+r.toString(10)+","+g.toString(10)+","+b.toString(10)+")"
+		ctx.fillRect(x, y, x+w, y+h)
 	}
 
 	this.draw_pixel = (ctrl,x,y,move) => {
@@ -37,11 +31,11 @@ function Screen(emu)
 			let y2 = this.height
 			if(ctrl & 0x10) x2 = x, x = 0
 			if(ctrl & 0x20) y2 = y, y = 0
-			this.draw_fill(ctx, x2 - x, y2 - y, x, y, c.r, c.g, c.b, 255)
+			this.draw_rect(ctx, x2 - x, y2 - y, x, y, c.r, c.g, c.b, 255)
 		}
 		// pixel mode
 		else {
-			this.draw_fill(ctx, 1, 1, x, y, c.r, c.g, c.b, 255)
+			this.draw_rect(ctx, 1, 1, x, y, c.r, c.g, c.b, 255)
 		}
 		if (move & 0x1) 
 			poke16(emu.uxn.dev, 0x28, x + 1);
