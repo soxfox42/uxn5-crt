@@ -107,7 +107,6 @@ function Screen(emu)
 		}
 	}
 
-
 	// naive functions
 	// assumes that you set height/width on startup (most roms do)
 	this.set_width = (w) => {
@@ -124,6 +123,16 @@ function Screen(emu)
 		this.blank_screen()
 	}
 
+	this.set_size = (w, h) => {
+		emulator.screen.fgctx.canvas.width = w;
+		emulator.screen.bgctx.canvas.width = w;
+		emulator.screen.bgctx.canvas.height = h;
+		emulator.screen.fgctx.canvas.height = h;
+		this.width = w;
+		this.height = h;
+		this.blank_screen()
+	}
+
 	this.dei = (port) => {
 		switch (port) {
 			case 0x22: return this.width >> 8;
@@ -133,8 +142,6 @@ function Screen(emu)
 			default: return emulator.uxn.peek8(emulator.uxn.dev + port) ;
 		}
 	}
-
-	
 
 	this.update_palette = () => {
 		let r1 = emu.uxn.ram[emu.uxn.dev + 0x8]
