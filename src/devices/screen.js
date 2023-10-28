@@ -3,7 +3,7 @@
 
 function rgbhex(color) {
 	if(!color) return "#000"
-	return "#" + color.r.toString(16) + color.g.toString(16) + color.b.toString(16);
+	return "#" + color.r.toString(16) + "0" + color.g.toString(16) + "0" + color.b.toString(16) + "0";
 }
 
 const blending = [
@@ -14,11 +14,25 @@ const blending = [
 
 function Screen(emu)
 {
-	this.colors = [];
+	this.width = 512
+	this.height = 320
+	this.colors = [{r: 0, g: 0, b:0}];
+
+	this.make_fill = (ctx, w, h, r, g, b, a) => {
+		let img = ctx.createImageData(w, h)
+		for (let i = 0; i < img .data.length; i += 4) {
+			img.data[i+0] = r << 4;
+			img.data[i+1] = g << 4;
+			img.data[i+2] = b << 4;
+			img.data[i+3] = a;
+		}
+		return img
+	}
 
 	this.blank_screen = () => {
-		emulator.screen.bgctx.fillStyle = rgbhex(this.colors[0])
-		emulator.screen.bgctx.fillRect(0, 0, this.width, this.height)
+		let ctx = emulator.screen.bgctx
+		let img = this.make_fill(ctx, this.width, this.height, this.colors[0].r, this.colors[0].g, this.colors[0].b, 255)
+		ctx.putImageData(img, 0, 0);
 	}
 
 	// naive functions

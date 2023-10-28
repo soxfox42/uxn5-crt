@@ -43,7 +43,7 @@ function Controller(emu) {
 		} else {
 			this.keys &= ~mask;
 		}
-		console.log("keydown", event.key, (this.dev + 3).toString(16));
+		// console.log("keydown", event.key, (this.dev + 3).toString(16));
 		emu.uxn.poke8(this.dev + 2, this.keys);
 		emu.uxn.poke8(this.dev + 3, charCode);
 		emu.uxn.eval(emu.uxn.peek16(this.dev))
