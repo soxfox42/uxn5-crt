@@ -53,11 +53,12 @@ function Emu ()
 		case 0xc0: return this.datetime.dei(port)
 		case 0x20: return this.screen.dei(port)
 		}
-		return this.uxn.getdev(port)
+
+		return this.uxn.ram[this.uxn.dev + port]
 	}
 
 	this.deo = (port, val) => {
-		this.uxn.setdev(port, val)
+		this.uxn.ram[this.uxn.dev + port] = val
 		let x, y, move, ctrl = 0;
 		switch(port) {
 		// System

@@ -47,9 +47,6 @@ function Uxn (emu)
 	this.rst = new Stack(this, 0x11000)
 	this.dev = 0x12000
 
-	this.getdev = (port) => { return this.ram[this.dev + port] }
-	this.setdev = (port, val) => { this.ram[this.dev + port] = val }
-
 	this.pop = () => {
 		return this.r2 ? this.src.pop16() : this.src.pop8()
 	}
