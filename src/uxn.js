@@ -120,7 +120,6 @@ function Uxn (emu)
 		if(!pc || this.dev[0x0f])
 			return 0;
 		while((instr = this.ram[pc++])) {
-			emu.onStep(pc, instr)
 			// registers
 			this.r2 = instr & 0x20
 			this.rr = instr & 0x40
