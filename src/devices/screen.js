@@ -22,18 +22,21 @@ function Screen(emu)
 		const ctx = ctrl & 0x40 ? this.fgctx : this.bgctx
 		const color = ctrl & 0x3
 		const c = this.colors[color]
-		ctx.fillStyle = "rgba("+c.r.toString(10)+","+c.g.toString(10)+","+c.b.toString(10)+")"
+		const a = (color == 0 && (ctrl & 0x40)) ? 0 : 1
+		if (a) {
+			ctx.fillStyle = "rgba("+c.r.toString(10)+","+c.g.toString(10)+","+c.b.toString(10)+")"
+		}
 		// fill mode
 		if(ctrl & 0x80) {
 			let x2 = this.width
 			let y2 = this.height
 			if(ctrl & 0x10) x2 = x, x = 0
 			if(ctrl & 0x20) y2 = y, y = 0
-			ctx.fillRect(x, y, x2 - x, y2 - y)
+			a ? ctx.fillRect(x, y, x2 - x, y2 - y) : ctx.clearRect(x, y, x2 - x, y2 - y)
 		}
 		// pixel mode
 		else {
-			ctx.fillRect(x, y, 1, 1)
+			a? ctx.fillRect(x, y, 1, 1) : ctx.clearRect(x, y, 1, 1)
 		}
 		if (move & 0x1) 
 			poke16(emu.uxn.dev, 0x28, x + 1);
