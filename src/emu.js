@@ -13,7 +13,8 @@ function Emu ()
 	this.controller = new Controller(this)
 	this.screen = new Screen(this)
 	this.datetime = new DateTime(this)
-	this.mouse= new Mouse(this)
+	this.mouse = new Mouse(this)
+	this.file = new FileDvc(this)
 
 	this.dei = (port) => {
 		const d = port & 0xf0
