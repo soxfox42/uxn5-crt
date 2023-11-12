@@ -6,6 +6,7 @@ sources:
     - https://git.sr.ht/~rabbits/uxn5
 tasks:
     - upload: |
+        cd uxn5
         tar -czf out.tar.gz index.html src/
         acurl() {
             set +x
