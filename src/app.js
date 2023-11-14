@@ -7,8 +7,8 @@ try {
   isEmbed = true;
 }
 
-if (isEmbed) {
-  document.body.className = "embed";
+if (!isEmbed) {
+  document.body.className = "";
 }
 
 const emulator = new Emu()
