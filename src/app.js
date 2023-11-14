@@ -84,6 +84,8 @@ emulator.init().then(() => {
   if (m) {
     emulator.uxn.load(b64decode(m[1])).eval(0x0100);
   }
+  document.getElementById("content").style.display = "block";
+  document.getElementById("loading").style.display = "none";
 });
 
 async function handleROMLoaded(rom) {
