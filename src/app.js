@@ -7,6 +7,10 @@ try {
   isEmbed = true;
 }
 
+if (isEmbed) {
+  document.body.className = "embed";
+}
+
 const emulator = new Emu()
 
 emulator.init().then(() => {
@@ -99,6 +103,3 @@ function b64decode(s) {
   return new Uint8Array([...atob(s)].map(c=>c.charCodeAt()));
 }
 
-if (isEmbed) {
-  document.body.className = "embed";
-}
