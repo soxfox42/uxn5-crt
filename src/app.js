@@ -1,5 +1,12 @@
 'use strict'
 
+let isEmbed;
+try {
+  isEmbed = window.self !== window.top;
+} catch (e) {
+  isEmbed = true;
+}
+
 const emulator = new Emu()
 
 emulator.init().then(() => {
@@ -16,7 +23,6 @@ emulator.init().then(() => {
   window.addEventListener("keyup", emulator.controller.keyevent);
 
   // Input box
-
   const console_input = document.getElementById("console_input")
   console_input.addEventListener("keyup", function(event) {
     if (event.key === "Enter") {
@@ -38,32 +44,61 @@ emulator.init().then(() => {
   emulator.screen.set_size(512, 320)
   window.requestAnimationFrame(step);
 
-  // Support dropping files
+  if (!isEmbed) {
+    // Support dropping files
+    const target = document.body
+    target.addEventListener("dragover", (event) => {
+      event.preventDefault();
+    });
+    target.addEventListener("drop", (ev) => {
+      ev.preventDefault();
+      let file = ev.dataTransfer.files[0], reader = new FileReader()
+      reader.onload = function (event) {
+        let rom = new Uint8Array(event.target.result)
+        emulator.screen.set_size(512, 320)
+        emulator.uxn.load(rom).eval(0x0100)
+        document.getElementById("title").innerHTML = file.name
+        handleROMLoaded(rom);
+      };
+      reader.readAsArrayBuffer(file)
+    });
+      
+    document.getElementById("browser").addEventListener("change", function(event) {
+        let file = event.target.files[0], reader = new FileReader()
+      reader.onload = function (event) {
+        let rom = new Uint8Array(event.target.result)
+        emulator.screen.set_size(512, 320)
+        emulator.uxn.load(rom).eval(0x0100)
+        document.getElementById("title").innerHTML = file.name
+        handleROMLoaded(rom);
+      };
+      reader.readAsArrayBuffer(file)
+    });
+  }
 
-  const target = document.body
-  target.addEventListener("dragover", (event) => {
-    event.preventDefault();
-  });
-  target.addEventListener("drop", (ev) => {
-    ev.preventDefault();
-    let file = ev.dataTransfer.files[0], reader = new FileReader()
-    reader.onload = function (event) {
-      let rom = new Uint8Array(event.target.result)
-      emulator.screen.set_size(512, 320)
-      emulator.uxn.load(rom).eval(0x0100)
-      document.getElementById("title").innerHTML = file.name
-    };
-    reader.readAsArrayBuffer(file)
-  });
-    
-  document.getElementById("browser").addEventListener("change", function(event) {
-      let file = event.target.files[0], reader = new FileReader()
-    reader.onload = function (event) {
-      let rom = new Uint8Array(event.target.result)
-      emulator.screen.set_size(512, 320)
-      emulator.uxn.load(rom).eval(0x0100)
-      document.getElementById("title").innerHTML = file.name
-    };
-    reader.readAsArrayBuffer(file)
-  });
+  const m = window.location.hash.match(/rom=([^&]+)/);
+  if (m) {
+    emulator.uxn.load(b64decode(m[1])).eval(0x0100);
+  }
 });
+
+async function handleROMLoaded(rom) {
+  history.replaceState('', '', "#rom=" + await b64encode(rom));
+}
+
+async function b64encode(bs) {
+  const url = await new Promise(resolve => {
+    const reader = new FileReader()
+    reader.onload = () => { resolve(reader.result); }
+    reader.readAsDataURL(new Blob([bs]))
+  });
+  return url.slice(url.indexOf(',') + 1);
+}
+
+function b64decode(s) {
+  return new Uint8Array([...atob(s)].map(c=>c.charCodeAt()));
+}
+
+if (isEmbed) {
+  document.body.className = "embed";
+}
