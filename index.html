@@ -2,6 +2,7 @@
 <html>
 <head>
 	<meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width" />
 	<title>Varvara Emulator</title>
 <style>
 	body { font-family:monospace; overflow:hidden; height:100vh; padding:15px; margin:0 }
@@ -20,14 +21,18 @@
 	#console_err { color:red; font-weight:bold }
 	#loading { width: 100%; height: 100vh; position: absolute; z-index: 100; display: flex; align-items: center; justify-content: center }
 	#content { display: none; }
-
 	body.embed { padding: 0; }
 	.embed #metadata { display: none }
 	.embed #bgcanvas { border: 0 !important; }
-	.embed #console_input { display: none }
-	.embed #console_std { display: none }
-	.embed #console_err { display: none }
-</style>
+    .embed #suffix { display: none }
+    @media only screen and (max-width: 600px) {
+      body { padding: 0 }
+      #screen #fgcanvas { height: 100vh }
+      #screen #bgcanvas { height: 100vh }
+      #metadata { display: none; }
+      #suffix { display: none }
+    }
+ </style>
 </head>
 <body class="embed">
 	<div id="loading">
@@ -44,10 +49,12 @@
 			<canvas id="bgcanvas" width="100" height="100"></canvas>
 			<canvas id="fgcanvas" width="100" height="100"></canvas>
 		</div>
+        <div id='suffix'>
 		<input type="text" id="console_input" placeholder="Console">
 		<pre id='console_std'></pre>
 		<pre id='console_err'></pre>
         <p>You can find more roms and information about the uxn project <a href="https://github.com/hundredrabbits/awesome-uxn">here</a></p>
+        </div>
 	</div>
 	<script src="src/uxn.js"></script>
 	<!-- Comment this line out to use the js (not wasm) core -->
