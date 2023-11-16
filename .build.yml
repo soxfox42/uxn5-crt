@@ -1,12 +1,14 @@
-image: debian/stable
+image: alpine/edge
 oauth: pages.sr.ht/PAGES:RW
+packages:
+- hut
 environment:
-    SITE: rabbits.srht.site/uxn5
+  site: rabbits.srht.site
 sources:
     - https://git.sr.ht/~rabbits/uxn5
 tasks:
     - package: |
         cd uxn5
-        tar -czf out.tar.gz index.html src/
+        tar -czf ../out.tar.gz index.html src/
     - upload: 
-        hub pages publish -d $site  out.tar.gz
+        hut pages publish -d $site -s /uxn5  out.tar.gz
