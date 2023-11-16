@@ -5,12 +5,8 @@ environment:
 sources:
     - https://git.sr.ht/~rabbits/uxn5
 tasks:
-    - upload: |
+    - package: |
         cd uxn5
         tar -czf out.tar.gz index.html src/
-        acurl() {
-            set +x
-            curl -H "Authorization: Bearer ${OAUTH2_TOKEN}" "${@}"
-            set -x
-        }
-        acurl -fsS "https://pages.sr.ht/publish/${SITE}" -Fcontent=@out.tar.gz
+    - upload: 
+        hub pages publish -d $site  out.tar.gz
