@@ -98,10 +98,13 @@ async function b64encode(bs) {
     reader.onload = () => { resolve(reader.result); }
     reader.readAsDataURL(new Blob([bs]))
   });
-  return url.slice(url.indexOf(',') + 1);
+  return url.slice(url.indexOf(',') + 1).replace(/\//g, '_').replace(/\+/g, '-').replace(/\=+$/, '');
 }
 
 function b64decode(s) {
-  return new Uint8Array([...atob(s)].map(c=>c.charCodeAt()));
+  if (s.length % 4 != 0){
+    s += ('===').slice(0, 4 - (s.length % 4));
+  }
+  return new Uint8Array([...atob(s.replace(/_/g, '/').replace(/-/g, '+'))].map(c=>c.charCodeAt()));
 }
 
