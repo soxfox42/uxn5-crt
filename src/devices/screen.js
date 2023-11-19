@@ -47,7 +47,7 @@ function Screen(emu)
 	this.draw_sprite = (ctrl, x, y, move, ptr) => {
 		const twobpp = !!(ctrl & 0x80);
 		const length = move >> 4;
-	    const ctx = ctrl & 0x40 ? this.fgctx : this.bgctx
+		const ctx = ctrl & 0x40 ? this.fgctx : this.bgctx;
 		const color = ctrl & 0xf, opaque = color % 5;
 		const width = ctx.canvas.width;
 		const height = ctx.canvas.height;

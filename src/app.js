@@ -98,7 +98,7 @@ async function b64encode(bs) {
     reader.onload = () => { resolve(reader.result); }
     reader.readAsDataURL(new Blob([bs]))
   });
-  return url.slice(url.indexOf(',') + 1).replace(/\//g, '_').replace(/\+/g, '-').replace(/\=+$/, '');
+  return url.slice(url.indexOf(',') + 1).replace(/\//g, '_').replace(/\+/g, '-').replace(/=+$/, '');
 }
 
 function b64decode(s) {
