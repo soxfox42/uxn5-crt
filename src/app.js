@@ -13,6 +13,8 @@ if (!isEmbed) {
 
 const emulator = new Emu()
 
+const share = new ShareView(document.getElementById("share"));
+
 emulator.init().then(() => {
   emulator.console.write_el = document.getElementById("console_std")
   emulator.console.error_el = document.getElementById("console_err")
@@ -25,6 +27,7 @@ emulator.init().then(() => {
   emulator.fgCanvas.addEventListener("pointerup", emulator.pointer_up);
   window.addEventListener("keydown", emulator.controller.keyevent);
   window.addEventListener("keyup", emulator.controller.keyevent);
+
 
   // Input box
   const console_input = document.getElementById("console_input")
@@ -83,13 +86,16 @@ emulator.init().then(() => {
   const m = window.location.hash.match(/rom=([^&]+)/);
   if (m) {
     emulator.uxn.load(b64decode(m[1])).eval(0x0100);
+    share.setValue(window.location.href);
   }
   document.getElementById("content").style.display = "block";
   document.getElementById("loading").style.display = "none";
 });
 
 async function handleROMLoaded(rom) {
-  history.replaceState('', '', "#rom=" + await b64encode(rom));
+  const hash = "#rom=" + await b64encode(rom);
+  history.replaceState('', '', hash);
+  share.setValue(`${window.location.protocol}//${window.location.host}${window.location.pathname}${window.location.search}${hash}`);
 }
 
 async function b64encode(bs) {
@@ -108,3 +114,21 @@ function b64decode(s) {
   return new Uint8Array([...atob(s.replace(/_/g, '/').replace(/-/g, '+'))].map(c=>c.charCodeAt()));
 }
 
+function ShareView(el) {
+  const inputEl = document.createElement("input");
+  inputEl.readOnly = true;
+  el.appendChild(inputEl);
+  const buttonEl = document.createElement("button");
+  buttonEl.disabled = true;
+  buttonEl.addEventListener("click", (ev) => {
+    ev.preventDefault();
+    navigator.clipboard.writeText(inputEl.value);
+  });
+  buttonEl.appendChild(document.createTextNode("Copy"));
+  el.appendChild(buttonEl);
+
+  this.setValue = (v) => {
+    buttonEl.disabled = false;
+    inputEl.value = v;
+  }
+}
