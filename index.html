@@ -5,21 +5,23 @@
   <meta name="viewport" content="width=device-width" />
   <title>Varvara Emulator</title>
   <style>
-    body { font-family:monospace; overflow:hidden; height:100vh; padding:15px; margin:0 }
+    body { font-family:monospace; padding:30px; margin:0 }
+    body a { color:black}
     textarea { resize:none; width:100%; height:100vh; border:0; padding:10px; margin-bottom:0px; background:#efefef }
     textarea:focus { outline: none !important }
     div#term { width:100%; background:#000; padding:10px; color:white; height:55px; overflow:scroll; white-space:pre; display:none }
     div#stack { width:100%; height:25px; background:#72dec2; padding:10px; margin-bottom:20px;font-weight:bold; display:none }
     body.active textarea { height:calc(100% - 140px) }
     body.active div#term, body.active div#stack { display:block }
+	#metadata, #metadata > * { line-height: 30px}
     #screen { image-rendering: pixelated; image-rendering: crisp-edges; touch-action: none; margin-bottom: 15px }
     #screen > * { cursor: none }
-    #screen #bgcanvas { position: relative; display:block; left: 0; top: 0; z-index: 0; border: 2px solid #000; width: auto; height: 80vh}
-    #screen #fgcanvas { position: absolute; left: 2px; top: 2px; z-index: 1; width: auto; height: 80vh}
+    #screen #bgcanvas { position: relative; display:block; left: 0; top: 0; z-index: 0; border: 2px solid #000; }
+    #screen #fgcanvas { position: absolute; left: 2px; top: 2px; z-index: 1;}
     #metadata { margin-bottom: 15px; display: flex; }
     #metadata span { padding-right:45px}
     #console_err { color:red; font-weight:bold }
-    #loading { width: 100%; height: 100vh; position: absolute; z-index: 100; display: flex; align-items: center; justify-content: center }
+    #loading { width: calc(100% - 60px);height: calc(100% - 60px);position: fixed;z-index: 100;display: flex;align-items: center;justify-content: center;x: 0;y: 0;background: white; }
     #content { display: none; }
     .embed { padding: 0; }
     .embed #metadata { display: none }
@@ -51,26 +53,24 @@
 </head>
 <body class="embed">
   <div id="loading">
-    <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="#aaa" class="bi bi-hourglass-split" viewBox="0 0 16 16">
-      <path d="M2.5 15a.5.5 0 1 1 0-1h1v-1a4.5 4.5 0 0 1 2.557-4.06c.29-.139.443-.377.443-.59v-.7c0-.213-.154-.451-.443-.59A4.5 4.5 0 0 1 3.5 3V2h-1a.5.5 0 0 1 0-1h11a.5.5 0 0 1 0 1h-1v1a4.5 4.5 0 0 1-2.557 4.06c-.29.139-.443.377-.443.59v.7c0 .213.154.451.443.59A4.5 4.5 0 0 1 12.5 13v1h1a.5.5 0 0 1 0 1h-11zm2-13v1c0 .537.12 1.045.337 1.5h6.326c.216-.455.337-.963.337-1.5V2h-7zm3 6.35c0 .701-.478 1.236-1.011 1.492A3.5 3.5 0 0 0 4.5 13s.866-1.299 3-1.48V8.35zm1 0v3.17c2.134.181 3 1.48 3 1.48a3.5 3.5 0 0 0-1.989-3.158C8.978 9.586 8.5 9.052 8.5 8.351z"/>
-    </svg>
+    <p>Loading..</p>
   </div>
   <div id="content">
+    <div id="screen" style="position: relative;">
+		<canvas id="bgcanvas" width="100" height="100"></canvas>
+		<canvas id="fgcanvas" width="100" height="100"></canvas>
+    </div>
     <div id='metadata'>
       <span id='title'>Drag rom on window to start</span>
       <input id="browser" type="file" name="name" />
       <div id="share"></div>
     </div>
-    <div id="screen" style="position: relative;">
-      <canvas id="bgcanvas" width="100" height="100"></canvas>
-      <canvas id="fgcanvas" width="100" height="100"></canvas>
-    </div>
-        <div id='suffix'>
-    <input type="text" id="console_input" placeholder="Console">
-    <pre id='console_std'></pre>
-    <pre id='console_err'></pre>
-        <p>You can find more roms and information about the uxn project <a href="https://github.com/hundredrabbits/awesome-uxn">here</a></p>
-        </div>
+	<div id='suffix'>
+		<input type="text" id="console_input" placeholder="Console">
+		<pre id='console_std'></pre>
+		<pre id='console_err'></pre>
+		<p><b>Varvara Emulator</b> | <a href='https://wiki.xxiivv.com/site/varvara.html' target='_blank'>Information</a> | <a href='https://git.sr.ht/~rabbits/uxn5' target='_blank'>View Source</a> | <a href="https://github.com/hundredrabbits/awesome-uxn">Download Roms</a></p>
+	</div>
   </div>
   <script src="src/uxn.js"></script>
   <!-- Comment this line out to use the js (not wasm) core -->
