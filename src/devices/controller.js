@@ -39,12 +39,12 @@ function Controller(emu) {
 		} else if (mask == 0 && event.keyCode < 20) {
 			charCode = event.keyCode;
 		}
+		emu.uxn.dev[0x83] = charCode;
 		} else {
 			this.keys &= ~mask;
 		}
 		// console.log("keydown", event.key, (0x83).toString(16));
 		emu.uxn.dev[0x82] = this.keys;
-		emu.uxn.dev[0x83] = charCode;
 		emu.uxn.eval(peek16(emu.uxn.dev, 0x80))
 	}
 }
