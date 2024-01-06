@@ -1,6 +1,6 @@
 # Uxn5
 
-An emulator for the [Uxn stack-machine](https://wiki.xxiivv.com/site/uxn.html), written in Javascript. 
+An emulator for the [Uxn stack-machine](https://wiki.xxiivv.com/site/uxn.html), written in Javascript. Check out a live demo at [rabbits.srht.site/uxn5](https://rabbits.srht.site/uxn5/)
 
 ## Usage
 
