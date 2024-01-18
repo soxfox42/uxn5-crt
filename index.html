@@ -28,8 +28,9 @@
     #console_err { color:red; font-weight:bold }
     #loading { width: calc(100% - 60px);height: calc(100% - 60px);position: fixed;z-index: 100;display: flex;align-items: center;justify-content: center;x: 0;y: 0;background: white; }
     #content { display: none; margin-bottom:25px }
-	#suffix { border:2px solid black; border-top:0;}
-	#suffix input { width: calc(100% - 20px);border: 0;padding: 5px 10px;font-family: mono; }
+	#suffix { border:2px solid black; border-top:0; position:relative}
+	#suffix:before {content: ">";position: absolute;left: 10px;line-height: 30px;}
+	#suffix input { width: calc(100% - 35px);border: 0;padding: 0px 10px 0px 25px;font-family: mono;line-height: 30px; }
 	#suffix pre { margin: 0;background: #aaa;padding: 5px 10px;font-family: mono;font-size: 12px; }
     .embed { padding: 0; overflow: hidden; }
     .embed #metadata { display: none }
@@ -78,7 +79,7 @@
 		</div>
     </div>
 	<div id='suffix'>
-		<input type="text" id="console_input" placeholder="Console">
+		<input type="text" id="console_input" placeholder="">
 		<pre id='console_std'></pre>
 		<pre id='console_err'></pre>
 	</div>
