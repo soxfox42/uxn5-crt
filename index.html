@@ -21,7 +21,7 @@
     #screen #bgcanvas { position: relative; display:block; left: 0; top: 0; z-index: 0; border: 2px solid #000; }
     #screen #fgcanvas { position: absolute; left: 2px; top: 2px; z-index: 1;}
     #metadata { position: fixed;bottom: 0px;background:black; color:#777;left: 0px;width: 100vw;height: 40px;padding: 0px 30px;line-height:40px; z-index:900 }
-    #metadata .right { display:inline-block; float:right }
+    #metadata .right { display:inline-block;position: absolute;right: 30px; }
 	#metadata a { color:#72dec2 }
 	#metadata b { color:#fff }
 	#metadata #title { color:#777 }
@@ -50,14 +50,6 @@
     }
     .share-popup input {
       width: 20em;
-    }
-    @media only screen and (max-width: 600px) {
-      body { padding: 0 }
-      #screen #fgcanvas { height: 100vh }
-      #screen #bgcanvas { height: 100vh }
-      #metadata { display: none; }
-      #suffix { display: none }
-      #share { position: relative; }
     }
   </style>
 </head>
