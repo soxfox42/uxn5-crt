@@ -76,6 +76,8 @@ function Screen(emu)
 					}
 				}
 			}	
+			if(x1 >= 0x8000) x1 = -(0x10000 - x1)
+			if(y1 >= 0x8000) y1 = -(0x10000 - y1)
 			ctx.putImageData(imDat, x1, y1);
 			ptr += addr_incr;
 		}
