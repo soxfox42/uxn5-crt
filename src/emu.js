@@ -42,10 +42,12 @@ function Emu ()
 		case 0x19: this.console.error(val); break;
 		// Screen
 		case 0x22, 0x23: 
-			this.screen.set_width(peek16(this.uxn.dev, 0x22));
+			this.screen.set_width(peek16(this.uxn.dev, 0x22))
+			this.set_zoom(this.zoom)
 			break;
 		case 0x24, 0x25: 
-			this.screen.set_height(peek16(this.uxn.dev, 0x24));
+			this.screen.set_height(peek16(this.uxn.dev, 0x24))
+			this.set_zoom(this.zoom)
 			break;
 		case 0x2e: {
 			const x = peek16(this.uxn.dev, 0x28)
@@ -88,7 +90,11 @@ function Emu ()
 	}
 
 	this.toggle_zoom = () => {
-		this.zoom = this.zoom == 2 ? 1 : 2
+		this.set_zoom(this.zoom == 2 ? 1 : 2)
+	}
+
+	this.set_zoom = (zoom) => {
+		this.zoom = zoom
 		emulator.bgCanvas.style.width = emulator.fgCanvas.style.width = (this.zoom * this.screen.width)+"px"
 	}
 
