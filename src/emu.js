@@ -9,6 +9,7 @@ function Emu ()
 		console.log("Using Vanilla JS core")
 		this.uxn = new Uxn(this)
 	}
+	this.zoom = 1;
 	this.console = new Console(this)
 	this.controller = new Controller(this)
 	this.screen = new Screen(this)
@@ -68,7 +69,7 @@ function Emu ()
 		const bounds = emulator.bgCanvas.getBoundingClientRect();
 		const x = emulator.bgCanvas.width * (event.clientX - bounds.left) / bounds.width;
 		const y = emulator.bgCanvas.height * (event.clientY - bounds.top) / bounds.height;
-		this.mouse.move(x,y)
+		this.mouse.move(x, y)
 		event.preventDefault();
 	}
 
@@ -88,7 +89,7 @@ function Emu ()
 
 	this.toggle_zoom = () => {
 		this.zoom = this.zoom == 2 ? 1 : 2
-		emulator.bgCanvas.style.width = (this.zoom * this.screen.width)+"px"
+		emulator.bgCanvas.style.width = emulator.fgCanvas.style.width = (this.zoom * this.screen.width)+"px"
 	}
 
 	this.init = () => {

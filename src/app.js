@@ -22,9 +22,9 @@ emulator.init().then(() => {
   emulator.fgCanvas = document.getElementById("fgcanvas");
   emulator.screen.bgctx = emulator.bgCanvas.getContext("2d", {"willReadFrequently": true})
   emulator.screen.fgctx = emulator.fgCanvas.getContext("2d", {"willReadFrequently": true})
-  emulator.fgCanvas.addEventListener("pointermove", emulator.pointer_moved);
-  emulator.fgCanvas.addEventListener("pointerdown", emulator.pointer_down);
-  emulator.fgCanvas.addEventListener("pointerup", emulator.pointer_up);
+  document.getElementById("content").addEventListener("pointermove", emulator.pointer_moved)
+  document.getElementById("content").addEventListener("pointerdown", emulator.pointer_down)
+  document.getElementById("content").addEventListener("pointerup", emulator.pointer_up)
   window.addEventListener("keydown", emulator.controller.keyevent);
   window.addEventListener("keyup", emulator.controller.keyevent);
 
