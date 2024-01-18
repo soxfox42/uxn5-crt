@@ -20,7 +20,7 @@
     #screen > * { cursor: none }
     #screen #bgcanvas { position: relative; display:block; left: 0; top: 0; z-index: 0; border: 2px solid #000; }
     #screen #fgcanvas { position: absolute; left: 2px; top: 2px; z-index: 1;}
-    #metadata { position: fixed;bottom: 0px;background:black; color:#777;left: 0px;width: 100vw;height: 40px;padding: 0px 30px;line-height:40px }
+    #metadata { position: fixed;bottom: 0px;background:black; color:#777;left: 0px;width: 100vw;height: 40px;padding: 0px 30px;line-height:40px; z-index:900 }
     #metadata .right { display:inline-block; float:right }
 	#metadata a { color:#72dec2 }
 	#metadata b { color:#fff }
@@ -68,7 +68,7 @@
 		<canvas id="fgcanvas" width="100" height="100"></canvas>
     </div>
     <div id='metadata'>
-		<b>Varvara</b> | <a href='https://wiki.xxiivv.com/site/varvara.html' target='_blank'>About</a> | <a href='https://git.sr.ht/~rabbits/uxn5' target='_blank'>Source</a> | <a href="https://github.com/hundredrabbits/awesome-uxn">Roms</a> | <span id='title'>Drag rom on window to start</span>
+		<b>Varvara</b> | <a href='https://wiki.xxiivv.com/site/varvara.html' target='_blank'>About</a> | <a href='https://git.sr.ht/~rabbits/uxn5' target='_blank'>Source</a> | <a href="https://github.com/hundredrabbits/awesome-uxn">Roms</a> | <span id='title'>Drag rom on window</span>
 		<div class='right'>
 			<button onclick="toggle_zoom()">Zoom</button> 
 			<span id="share"></span>
