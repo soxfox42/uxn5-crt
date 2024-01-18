@@ -10,6 +10,7 @@ function Screen(emu)
 {
 	this.width = 512
 	this.height = 320
+	this.zoom = 1
 	this.colors = [{r: 0, g: 0, b:0}];
 
 	this.blank_screen = () => {
@@ -109,10 +110,10 @@ function Screen(emu)
 	}
 
 	this.set_size = (w, h) => {
-		this.fgctx.canvas.width = w;
-		this.bgctx.canvas.width = w;
-		this.bgctx.canvas.height = h;
-		this.fgctx.canvas.height = h;
+		this.fgctx.canvas.width = w * this.zoom;
+		this.bgctx.canvas.width = w * this.zoom;
+		this.bgctx.canvas.height = h * this.zoom;
+		this.fgctx.canvas.height = h * this.zoom;
 		this.width = w;
 		this.height = h;
 		this.blank_screen()

@@ -96,6 +96,10 @@ function loadROM(rom) {
   share.setROM(rom);
 }
 
+function toggle_zoom() {
+	emulator.toggle_zoom()
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // Sharing

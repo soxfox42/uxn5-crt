@@ -86,6 +86,11 @@ function Emu ()
 		this.uxn.eval(peek16(this.uxn.dev, 0x20))
 	}
 
+	this.toggle_zoom = () => {
+		this.zoom = this.zoom == 2 ? 1 : 2
+		emulator.bgCanvas.style.width = (this.zoom * this.screen.width)+"px"
+	}
+
 	this.init = () => {
 		return this.uxn.init(this);
 	}
