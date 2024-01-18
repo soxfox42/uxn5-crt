@@ -16,7 +16,7 @@
     body.active textarea { height:calc(100% - 140px) }
     body.active div#term, body.active div#stack { display:block }
 	#metadata, #metadata > * { line-height: 40px}
-    #screen { image-rendering: pixelated; image-rendering: crisp-edges; touch-action: none; margin-bottom: 0 }
+    #screen { image-rendering: pixelated; image-rendering: crisp-edges; touch-action: none; margin-bottom: 30px }
     #screen > * { cursor: none }
     #screen #bgcanvas { position: relative; display:block; left: 0; top: 0; z-index: 0; border: 2px solid #000; }
     #screen #fgcanvas { position: absolute; left: 2px; top: 2px; z-index: 1;}
@@ -28,7 +28,7 @@
     #console_err { color:red; font-weight:bold }
     #loading { width: calc(100% - 60px);height: calc(100% - 60px);position: fixed;z-index: 100;display: flex;align-items: center;justify-content: center;x: 0;y: 0;background: white; }
     #content { display: none; margin-bottom:25px }
-	#suffix { border:2px solid black; border-top:0; position:relative}
+	#suffix { border:2px solid black; position:relative}
 	#suffix:before {content: ">";position: absolute;left: 10px;line-height: 30px;}
 	#suffix input { width: calc(100% - 35px);border: 0;padding: 0px 10px 0px 25px;font-family: mono;line-height: 30px; }
 	#suffix pre { margin: 0;background: #aaa;padding: 5px 10px;font-family: mono;font-size: 12px; }
