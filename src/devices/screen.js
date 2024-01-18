@@ -59,6 +59,8 @@ function Screen(emu)
 		for (let i = 0; i <= length; i++) {
 			let x1 = x + dyx * i
 			let y1 = y + dxy * i
+			if(x1 >= 0x8000) x1 = -(0x10000 - x1)
+			if(y1 >= 0x8000) y1 = -(0x10000 - y1)
 			var imDat = ctx.getImageData(x1,y1, 8, 8);
 			for (let v = 0; v < 8; v++) {
 				let c = emu.uxn.ram[(ptr + v) & 0xffff] | (twobpp? (emu.uxn.ram[(ptr + v + 8) & 0xffff] << 8): 0);
@@ -76,8 +78,6 @@ function Screen(emu)
 					}
 				}
 			}	
-			if(x1 >= 0x8000) x1 = -(0x10000 - x1)
-			if(y1 >= 0x8000) y1 = -(0x10000 - y1)
 			ctx.putImageData(imDat, x1, y1);
 			ptr += addr_incr;
 		}
