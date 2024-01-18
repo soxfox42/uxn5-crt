@@ -92,6 +92,7 @@ emulator.init().then(() => {
 });
 
 function loadROM(rom) {
+  emulator.bgCanvas.style.width = ''
   emulator.uxn.load(rom).eval(0x0100);
   share.setROM(rom);
 }
