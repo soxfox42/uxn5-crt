@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width" />
   <title>Varvara Emulator</title>
   <style>
-    html { box-sizing: border-box; }
-    *, *:before, *:after { box-sizing: inherit; }
+    html { }
+    *, *:before, *:after { }
     body { font-family:monospace; padding:30px; margin:0 }
     body a { color:black}
     textarea { resize:none; width:100%; height:100vh; border:0; padding:10px; margin-bottom:0px; background:#efefef }
@@ -15,13 +15,15 @@
     div#stack { width:100%; height:25px; background:#72dec2; padding:10px; margin-bottom:20px;font-weight:bold; display:none }
     body.active textarea { height:calc(100% - 140px) }
     body.active div#term, body.active div#stack { display:block }
-	#metadata, #metadata > * { line-height: 30px}
+	#metadata, #metadata > * { line-height: 40px}
     #screen { image-rendering: pixelated; image-rendering: crisp-edges; touch-action: none; margin-bottom: 15px }
     #screen > * { cursor: none }
     #screen #bgcanvas { position: relative; display:block; left: 0; top: 0; z-index: 0; border: 2px solid #000; }
     #screen #fgcanvas { position: absolute; left: 2px; top: 2px; z-index: 1;}
-    #metadata { margin-bottom: 15px; display: flex; }
-    #metadata span { padding-right:45px}
+    #metadata { position: fixed;bottom: 0px;background:black; color:white;left: 0px;width: 100vw;height: 40px;padding: 0px 30px;line-height:40px }
+    #metadata .right { display:inline-block; float:right }
+	#metadata a { color:#72dec2 }
+	#metadata #title { color:#777 }
     #console_err { color:red; font-weight:bold }
     #loading { width: calc(100% - 60px);height: calc(100% - 60px);position: fixed;z-index: 100;display: flex;align-items: center;justify-content: center;x: 0;y: 0;background: white; }
     #content { display: none; }
@@ -64,28 +66,29 @@
 		<canvas id="fgcanvas" width="100" height="100"></canvas>
     </div>
     <div id='metadata'>
-      <span id='title'>Drag rom on window to start</span>
-      <input id="browser" type="file" name="name" />
-      <div id="share"></div>
+		<b>Varvara</b> | <a href='https://wiki.xxiivv.com/site/varvara.html' target='_blank'>About</a> | <a href='https://git.sr.ht/~rabbits/uxn5' target='_blank'>Source</a> | <a href="https://github.com/hundredrabbits/awesome-uxn">Roms</a> | <span id='title'>Drag rom on window to start</span>
+		<div class='right'>
+			
+			<input id="browser" type="file" name="name" />
+			<span id="share"></span>
+		</div>
     </div>
 	<div id='suffix'>
 		<input type="text" id="console_input" placeholder="Console">
 		<pre id='console_std'></pre>
 		<pre id='console_err'></pre>
-		<p><b>Varvara Emulator</b> | <a href='https://wiki.xxiivv.com/site/varvara.html' target='_blank'>Information</a> | <a href='https://git.sr.ht/~rabbits/uxn5' target='_blank'>View Source</a> | <a href="https://github.com/hundredrabbits/awesome-uxn">Download Roms</a></p>
 	</div>
   </div>
-  <script src="src/uxn.js"></script>
-  <!-- Comment this line out to use the js (not wasm) core -->
-  <script src="src/uxn-wasm.js"></script>
-  <script src="src/emu.js"></script>
-  <script src="src/devices/console.js"></script>
-  <script src="src/devices/controller.js"></script>
-  <script src="src/devices/datetime.js"></script>
-  <script src="src/devices/file.js"></script>
-  <script src="src/devices/mouse.js"></script>
-  <script src="src/devices/screen.js"></script>
-  <script src="src/app.js"></script>
+	<script src="src/uxn.js"></script>
+	<!-- Comment this line out to use the js (not wasm) core -->
+	<script src="src/uxn-wasm.js"></script>
+	<script src="src/emu.js"></script>
+	<script src="src/devices/console.js"></script>
+	<script src="src/devices/controller.js"></script>
+	<script src="src/devices/datetime.js"></script>
+	<script src="src/devices/file.js"></script>
+	<script src="src/devices/mouse.js"></script>
+	<script src="src/devices/screen.js"></script>
+	<script src="src/app.js"></script>
 </body>
 </html> 
-
