@@ -14,6 +14,7 @@ if (!isEmbed) {
 const emulator = new Emu()
 
 const share = new ShareView(document.getElementById("share"));
+const target_fps = 60;
 
 emulator.init().then(() => {
   emulator.console.write_el = document.getElementById("console_std")
@@ -43,11 +44,13 @@ emulator.init().then(() => {
   // Animation callback
   function step() {
     emulator.screen_callback();
-    window.requestAnimationFrame(step)
   }
 
-  emulator.screen.set_size(512, 320)
-  window.requestAnimationFrame(step);
+  emulator.screen.set_size(512, 320);
+
+  setInterval(() => {
+    window.requestAnimationFrame(step);
+  }, 1000 / target_fps);
 
   if (!isEmbed) {
     // Support dropping files
