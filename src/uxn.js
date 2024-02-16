@@ -8,7 +8,7 @@ function Stack(u)
 	this.pop1 = () => { return this.ram[(u.rk ? --this.ptrk : --this.ptr) & 0xff] }
 	this.pop2 = () => { return this.pop1() | (this.pop1() << 8) }
 	this.push1 = (val) => { this.ram[this.ptr++ & 0xff] = val }
-	this.push2 = (val) => { this.push1(val >> 8), this.push1(val & 0xff) }
+	this.push2 = (val) => { this.push1(val >> 8), this.push1(val) }
 }
 
 function Uxn (emu)
@@ -17,23 +17,20 @@ function Uxn (emu)
 	this.dev = new Uint8Array(0x100)
 	this.wst = new Stack(this)
 	this.rst = new Stack(this)
-
+	this.move = (distance, pc) => { return (pc + distance) & 0xffff }
+	this.jump = (addr, pc) => { return this.r2 ? addr : this.move(rel(addr), pc) }
 	this.pop1 = () => { return this.src.pop1() }
 	this.pop2 = () => { return this.src.pop2() }
 	this.popx = () => { return this.r2 ? this.src.pop2() : this.src.pop1() }
 	this.push1 = (x) => { this.src.push1(x) }
 	this.push2 = (x) => { this.src.push2(x) }
 	this.pushx = (x) => { if(this.r2) this.push2(x); else this.push1(x) }
-
 	this.peek1 = (addr, m = 0xffff) => { return this.ram[addr] }
 	this.peek2 = (addr, m = 0xffff) => { return (this.ram[addr] << 8) | this.ram[(addr + 1) & m] }
 	this.peekx = (addr, m = 0xffff) => { return this.r2 ? this.peek2(addr, m) : this.peek1(addr, m) }
 	this.poke1 = (addr, x, m = 0xffff) => { this.ram[addr] = x }
 	this.poke2 = (addr, x, m = 0xffff) => { this.ram[addr] = x >> 8; this.ram[(addr + 1) & m] = x }
 	this.pokex = (addr, x, m = 0xffff) => { if(this.r2) this.poke2(addr, x, m); else this.poke1(addr, x, m) }
-
-	this.jump = (addr, pc) => { return (this.r2 ? addr : pc + rel(addr)) & 0xffff }
-	this.move = (distance, pc) => { return (pc + distance) & 0xffff }
 
 	this.devr = (port) => {
 		if(this.r2)
@@ -43,33 +40,27 @@ function Uxn (emu)
 	}
 
 	this.devw = (port, val) => {
-		if(this.r2) {
-			emu.deo(port, val >> 8);
-			emu.deo((port + 1) & 0xff, val & 0xff)
-		} else
+		if(this.r2)
+			emu.deo(port, val >> 8), emu.deo((port + 1) & 0xff, val & 0xff)
+		else
 			emu.deo(port, val)
 	}
 
 	this.eval = (pc) => {
 		let a, b, c, instr, opcode
 		if(!pc || this.dev[0x0f])
-			return 0;
+			return 0
 		while((instr = this.ram[pc++])) {
 			// registers
 			this.r2 = instr & 0x20
 			this.rr = instr & 0x40
 			this.rk = instr & 0x80
-			if(this.rk) {
-				this.wst.ptrk = this.wst.ptr
-				this.rst.ptrk = this.rst.ptr
-			}
-			if(this.rr) {
-				this.src = this.rst
-				this.dst = this.wst
-			} else {
-				this.src = this.wst
-				this.dst = this.rst
-			}
+			if(this.rr)
+				this.src = this.rst, this.dst = this.wst
+			else
+				this.src = this.wst, this.dst = this.rst
+			if(this.rk)
+				this.src.ptrk = this.src.ptr
 			opcode = instr & 0x1f;
 			switch(opcode - (!opcode * (instr >> 5))) {
 			/* Literals/Calls */
@@ -123,11 +114,15 @@ function Uxn (emu)
 
 	this.load = (program) => {
 		for (let i = 0; i <= program.length; i++)
-			this.ram[0x100 + i] = program[i];
+			this.ram[0x100 + i] = program[i]
 		return this
 	}
 
+	this.init = () => {
+		return Promise.resolve()
+	}
+
 	function rel(val) {
-		return (val > 0x80 ? val - 256 : val)
+		return val > 0x80 ? val - 256 : val
 	}
 }
