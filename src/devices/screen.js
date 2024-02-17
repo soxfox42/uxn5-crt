@@ -129,16 +129,13 @@ function Screen(emu)
 	}
 
 	this.update_palette = () => {
-		let r1 = emu.uxn.dev[0x8]
-		let r2 = emu.uxn.dev[0x9]
-		let g1 = emu.uxn.dev[0xa]
-		let g2 = emu.uxn.dev[0xb]
-		let b1 = emu.uxn.dev[0xc]
-		let b2 = emu.uxn.dev[0xd]
-		this.colors[0] = {r: (r1 >> 4) << 4, g: (g1 >> 4) << 4, b: (b1 >> 4) << 4}
-		this.colors[1] = {r: (r1 & 0xf) << 4, g: (g1 & 0xf) << 4, b: (b1 & 0xf) << 4}
-		this.colors[2] = {r: (r2 >> 4) << 4, g: (g2 >> 4) << 4, b: (b2 >> 4) << 4}
-		this.colors[3] = {r: (r2 & 0xf) << 4, g: (g2 & 0xf) << 4, b: (b2 & 0xf) << 4}
+		let r = emu.uxn.dev[0x8] << 8 | emu.uxn.dev[0x9]
+		let g = emu.uxn.dev[0xa] << 8 | emu.uxn.dev[0xb]
+		let b = emu.uxn.dev[0xc] << 8 | emu.uxn.dev[0xd]
+		for(let i = 0; i < 4; i++){
+			let red = (r >> ((3 - i) * 4)) & 0xf, green = (g >> ((3 - i) * 4)) & 0xf, blue = (b >> ((3 - i) * 4)) & 0xf
+			this.colors[i] = { r: red << 4 | red, g: green << 4 | green, b: blue << 4 | blue }
+		}
 		this.blank_screen()
 	}
 }
