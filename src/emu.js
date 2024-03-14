@@ -68,16 +68,17 @@ function Emu ()
 	}
 
 	this.pointer_moved = (event) => {
-		const bounds = emulator.bgCanvas.getBoundingClientRect();
-		const x = emulator.bgCanvas.width * (event.clientX - bounds.left) / bounds.width;
-		const y = emulator.bgCanvas.height * (event.clientY - bounds.top) / bounds.height;
+		const bounds = emulator.bgCanvas.getBoundingClientRect()
+		const x = emulator.bgCanvas.width * (event.clientX - bounds.left) / bounds.width
+		const y = emulator.bgCanvas.height * (event.clientY - bounds.top) / bounds.height
 		this.mouse.move(x, y)
-		event.preventDefault();
+		event.preventDefault()
 	}
 
 	this.pointer_down = (event) => {
+		this.pointer_moved(event)
 		this.mouse.down(event.buttons)
-		event.preventDefault();
+		event.preventDefault()
 	}
 
 	this.pointer_up = (event) => {
