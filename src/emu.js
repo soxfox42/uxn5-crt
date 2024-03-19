@@ -10,6 +10,7 @@ function Emu ()
 		this.uxn = new Uxn(this)
 	}
 	this.zoom = 1;
+	this.system = new System(this)
 	this.console = new Console(this)
 	this.controller = new Controller(this)
 	this.screen = new Screen(this)
@@ -30,6 +31,7 @@ function Emu ()
 		this.uxn.dev[port] = val
 		switch(port) {
 		// System
+		case 0x03: this.system.expansion(peek16(this.uxn.dev, 0x02)); break;
 		case 0x08:
 		case 0x09:
 		case 0x0a:
