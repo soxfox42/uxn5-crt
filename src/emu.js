@@ -98,6 +98,12 @@ function Emu ()
 
 	this.set_zoom = (zoom) => {
 		this.zoom = zoom
+		
+		document.getElementById("content").style.marginLeft = -(this.screen.width/2*this.zoom) + "px"
+	
+		document.getElementById("screen").style.width = this.screen.width *this.zoom + "px"
+		document.getElementById("screen").style.height =this.screen.height * this.zoom + "px"
+
 		emulator.bgCanvas.style.width = emulator.fgCanvas.style.width = (this.zoom * this.screen.width)+"px"
 	}
 

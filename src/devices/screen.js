@@ -104,7 +104,6 @@ function Screen(emu)
 	}
 
 	this.set_height = (h) => {
-		document.getElementById("content").style.marginTop = -(h/2) - 45 + "px"
 		document.getElementById("screen").style.height = h + "px"
 		this.bgctx.canvas.height = h;
 		this.fgctx.canvas.height = h;
