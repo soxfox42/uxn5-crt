@@ -46,13 +46,18 @@ emulator.init().then(() => {
     emulator.screen_callback();
   }
 
-  emulator.screen.set_size(512, 320);
+  
 
   setInterval(() => {
     window.requestAnimationFrame(step);
   }, 1000 / target_fps);
 
-  if (!isEmbed) {
+  if(isEmbed){
+		emulator.screen.set_size(window.innerWidth, window.innerHeight);
+	}
+  else {
+	emulator.screen.set_size(512, 320);
+
     // Support dropping files
     const target = document.body
     target.addEventListener("dragover", (event) => {
