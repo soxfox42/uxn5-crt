@@ -95,6 +95,7 @@ function Screen(emu)
 	}
 
 	this.set_width = (w) => {
+		document.getElementById("content").style.marginLeft = -(w/2) + "px"
 		this.fgctx.canvas.width = w;
 		this.bgctx.canvas.width = w;
 		this.width = w;
@@ -102,6 +103,7 @@ function Screen(emu)
 	}
 
 	this.set_height = (h) => {
+		document.getElementById("content").style.marginTop = -(h/2) - 45 + "px"
 		this.bgctx.canvas.height = h;
 		this.fgctx.canvas.height = h;
 		this.height = h;
@@ -109,13 +111,8 @@ function Screen(emu)
 	}
 
 	this.set_size = (w, h) => {
-		this.fgctx.canvas.width = w ;
-		this.bgctx.canvas.width = w;
-		this.bgctx.canvas.height = h;
-		this.fgctx.canvas.height = h;
-		this.width = w;
-		this.height = h;
-		this.blank_screen()
+		this.set_width(w)
+		this.set_height(h)
 	}
 
 	this.dei = (port) => {

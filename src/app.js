@@ -95,7 +95,6 @@ emulator.init().then(() => {
     }
     loadROM(rom);
   }
-  document.getElementById("content").style.display = "inline-block";
   document.title = "Varvara Emulator";
 });
 

@@ -8,29 +8,33 @@
     html { }
     *, *:before, *:after { }
 	textarea, select, input, button { outline: none; }
-    body { font-family:monospace; padding:30px; margin:0; background:#ccc }
-    body a { color:black}
+    body { font-family:monospace; padding:30px; margin:0; background:#000 }
+    body a { color:white; text-decoration:none }
+	body a:hover { text-decoration:underline }
     textarea { resize:none; width:100%; height:100vh; border:0; padding:10px; margin-bottom:0px; background:#efefef }
     div#term { width:100%; background:#000; padding:10px; color:white; height:55px; overflow:scroll; white-space:pre; display:none }
     div#stack { width:100%; height:25px; background:#72dec2; padding:10px; margin-bottom:20px;font-weight:bold; display:none }
     body.active textarea { height:calc(100% - 140px) }
     body.active div#term, body.active div#stack { display:block }
-	#metadata, #metadata > * { line-height: 40px}
-    #screen { image-rendering: pixelated; image-rendering: crisp-edges; touch-action: none; margin-bottom: 30px }
+    #screen { image-rendering: pixelated; image-rendering: crisp-edges; touch-action: none;border: 1px solid #333;border-radius: 3px;overflow: hidden; }
     #screen > * { cursor: none }
     #screen #bgcanvas { position: relative; display:block; left: 0; top: 0; z-index: 0 }
     #screen #fgcanvas { position: absolute; left: 0; top: 0; z-index: 1 }
-    #metadata { position: fixed;bottom: 0px;background:black; color:#777;left: 0px;width: 100vw;height: 40px;padding: 0px 30px;line-height:40px; z-index:900 }
+    #metadata { }
+	#metadata ul { margin-left: 25px; padding: 0;float:left;margin-right:45px;line-height:24px }
     #metadata .right { display:inline-block;position: absolute;right: 30px; }
-	#metadata a { color:#72dec2 }
 	#metadata b { color:#fff }
 	#metadata #title { color:#777 }
+	#metadata button, #metadata input { display:inline-block; background:white; border:0;font-size: 12px; border-radius: 30px;padding: 2px 10px;line-height: 20px;margin-bottom: 1px; vertical-align:center }
+	#metadata input { padding:2px 2px;width:160px}
+	#metadata input[type="file"]::file-selector-button {  display:inline-block;border:0;background:#000; color:white; border-radius: 30px; padding:2px 10px}
+	#metadata button:hover, #metadata input:hover { background:#72dec2; cursor:pointer}
     #console_err { color:red; font-weight:bold }
-    #content { display: none; margin-bottom:25px }
-	#suffix { border:2px solid black; position:relative;}
-	#suffix:before {content: ">";position: absolute;left: 10px;line-height: 30px;}
-	#suffix input { width: calc(100% - 35px);border: 0;padding: 0px 10px 0px 25px;font-family: mono;line-height: 30px; }
-	#suffix pre { margin: 0;background: #aaa;padding: 5px 10px;font-family: mono;font-size: 12px; }
+    #content { position: absolute;left: 50%;top: 50%; }
+	#suffix { position:relative;}
+	#suffix:before {content: "•";position: absolute;left: 10px;line-height: 30px; color:white }
+	#suffix input { width: calc(100% - 35px);border: 0;padding: 0px 10px 0px 25px;font-family: mono;line-height: 30px;background:#000;color:white }
+	#suffix pre { margin: 0;background: #aaa;font-family: mono;font-size: 12px; }
     .embed { padding: 0; overflow: hidden; }
     .embed #metadata { display: none }
     .embed #bgcanvas { border: 0 !important; }
@@ -47,19 +51,23 @@
 		<canvas id="bgcanvas" width="100" height="100"></canvas>
 		<canvas id="fgcanvas" width="100" height="100"></canvas>
     </div>
-    <div id='metadata'>
-		<b>Varvara</b> | <a href='https://wiki.xxiivv.com/site/varvara.html' target='_blank'>About</a> | <a href='https://git.sr.ht/~rabbits/uxn5' target='_blank'>Source</a> | <a href="https://github.com/hundredrabbits/awesome-uxn">Roms</a> | <span id='title'>Drag rom on window</span>
-		<div class='right'>
-			<button onclick="toggle_zoom()">Zoom</button> 
-			<span id="share"></span>
-			<input id="browser" type="file" name="name" />
-		</div>
-    </div>
 	<div id='suffix'>
 		<input type="text" id="console_input" placeholder="console">
 		<pre id='console_std'></pre>
 		<pre id='console_err'></pre>
 	</div>
+    <div id='metadata'>
+		<ul>
+			<li><b>Varvara</b></li>
+			<li><a href='https://wiki.xxiivv.com/site/varvara.html' target='_blank'>About</a></li>
+			<li><a href='https://git.sr.ht/~rabbits/uxn5' target='_blank'>Source</a></li>
+			<li><a href="https://github.com/hundredrabbits/awesome-uxn">Roms</a></li>
+			<li><span id='title'>Drag rom on window</span></li>
+		</ul>
+		<ul>
+			<li><button onclick="toggle_zoom()">Zoom</button> <span id="share"></span> <input id="browser" type="file" name="name" /></li>
+		</ul>
+    </div>
   </div>
 	<script src="src/uxn.js"></script>
 	<!-- Comment this line out to use the js (not wasm) core -->
