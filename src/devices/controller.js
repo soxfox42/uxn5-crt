@@ -42,6 +42,7 @@ function Controller(emu) {
 		} else {
 			this.keys &= ~mask;
 		}
+		event.preventDefault();
 		emu.uxn.dev[0x82] = this.keys;
 		emu.uxn.eval(peek16(emu.uxn.dev, 0x80))
 	}
