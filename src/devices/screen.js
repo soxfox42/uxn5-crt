@@ -95,7 +95,7 @@ function Screen(emu)
 	}
 
 	this.set_width = (w) => {
-		document.getElementById("content").style.marginLeft = -(w/2) + "px"
+		document.getElementById("screen").style.marginLeft = -(w/2) + "px"
 		document.getElementById("screen").style.width = w + "px"
 		this.fgctx.canvas.width = w;
 		this.bgctx.canvas.width = w;

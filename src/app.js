@@ -69,7 +69,6 @@ emulator.init().then(() => {
       reader.onload = function (event) {
         let rom = new Uint8Array(event.target.result)
         emulator.screen.set_size(512, 320)
-        document.getElementById("title").innerHTML = file.name
         loadROM(rom);
       };
       reader.readAsArrayBuffer(file)
@@ -80,7 +79,6 @@ emulator.init().then(() => {
       reader.onload = function (event) {
         let rom = new Uint8Array(event.target.result)
         emulator.screen.set_size(512, 320)
-        document.getElementById("title").innerHTML = file.name
         loadROM(rom);
       };
       reader.readAsArrayBuffer(file)
@@ -153,13 +151,14 @@ function ShareView(el) {
     await navigator.clipboard.writeText(inputEl.value);
     toggleSharePopup();
   });
-  copyButtonEl.innerHTML = `Share`
+  copyButtonEl.innerHTML = `Copy`
   popupEl.appendChild(copyButtonEl);
 
   this.setROM = (v) => {
     rom = v;
     shareButtonEl.disabled = false;
     popupEl.style.display = "none";
+	document.getElementById("share").style.display = "initial"
   }
 }
 

@@ -99,7 +99,7 @@ function Emu ()
 	this.set_zoom = (zoom) => {
 		let content_el = document.getElementById("content")
 		let screen_el = document.getElementById("screen")
-		content_el.style.marginLeft = -(this.screen.width / 2 * zoom) + "px"
+		screen_el.style.marginLeft = -(this.screen.width / 2 * zoom) + "px"
 		screen_el.style.width = (this.screen.width * zoom) + "px"
 		screen_el.style.height = (this.screen.height * zoom) + "px"
 		emulator.bgCanvas.style.width = emulator.fgCanvas.style.width = (this.screen.width * zoom) + "px"
