@@ -97,14 +97,13 @@ function Emu ()
 	}
 
 	this.set_zoom = (zoom) => {
+		let content_el = document.getElementById("content")
+		let screen_el = document.getElementById("screen")
+		content_el.style.marginLeft = -(this.screen.width / 2 * zoom) + "px"
+		screen_el.style.width = (this.screen.width * zoom) + "px"
+		screen_el.style.height = (this.screen.height * zoom) + "px"
+		emulator.bgCanvas.style.width = emulator.fgCanvas.style.width = (this.screen.width * zoom) + "px"
 		this.zoom = zoom
-		
-		document.getElementById("content").style.marginLeft = -(this.screen.width/2*this.zoom) + "px"
-	
-		document.getElementById("screen").style.width = this.screen.width *this.zoom + "px"
-		document.getElementById("screen").style.height =this.screen.height * this.zoom + "px"
-
-		emulator.bgCanvas.style.width = emulator.fgCanvas.style.width = (this.zoom * this.screen.width)+"px"
 	}
 
 	this.init = () => {
@@ -120,4 +119,3 @@ function poke16(mem, addr, val) {
 	mem[addr] = val >> 8;
 	mem[addr + 1] = val;
 }
-

@@ -2,7 +2,6 @@
 
 function Controller(emu) {
 	this.keys = 0
-
 	this.keyevent = (event) => {
 		let mask = 0;
 		switch (event.keyCode) {
@@ -33,17 +32,16 @@ function Controller(emu) {
 		}
 		let charCode = 0;
 		if (event.type == "keydown") {
-			this.keys |= mask;
-		if (event.key.length == 1) {
-			charCode = event.key.charCodeAt(0);
-		} else if (mask == 0 && event.keyCode < 20) {
-			charCode = event.keyCode;
-		}
-		emu.uxn.dev[0x83] = charCode;
+				this.keys |= mask;
+			if (event.key.length == 1) {
+				charCode = event.key.charCodeAt(0);
+			} else if (mask == 0 && event.keyCode < 20) {
+				charCode = event.keyCode;
+			}
+			emu.uxn.dev[0x83] = charCode;
 		} else {
 			this.keys &= ~mask;
 		}
-		// console.log("keydown", event.key, (0x83).toString(16));
 		emu.uxn.dev[0x82] = this.keys;
 		emu.uxn.eval(peek16(emu.uxn.dev, 0x80))
 	}

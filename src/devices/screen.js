@@ -119,9 +119,9 @@ function Screen(emu)
 	this.dei = (port) => {
 		switch (port) {
 			case 0x22: return this.width >> 8;
-			case 0x23: return this.width & 0xf0;
+			case 0x23: return this.width & 0xff;
 			case 0x24: return this.height >> 8;
-			case 0x25: return this.height & 0xf0;
+			case 0x25: return this.height & 0xff;
 			default: return emulator.uxn.dev[port];
 		}
 	}
