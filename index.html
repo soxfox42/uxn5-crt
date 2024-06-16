@@ -43,8 +43,9 @@
 	.share-popup { background: #000; position: fixed;z-index: 1000;bottom: 50px;right: 10px;padding: 0px 10px;border-radius: 3px;}
 	.share-popup button { margin-left: 0; border-radius:0 !important}
 	.share-popup input {width: 20em; border-radius:0 !important; margin-left:0; background: #ccc !important;padding: 2px 15px !important;}
-	noscript { display:block; padding:15px}
-	noscript a { text-decoration:underline; font-weight:bold }
+	div.noscript { display:block; padding:15px; margin: 30px auto; max-width: 400px; }
+	div.noscript img { float:left; margin-right:15px }
+	div.noscript a { text-decoration:underline; font-weight:bold }
 	</style>
 </head>
 <body class="embed">
@@ -74,7 +75,10 @@
 		</div>
 	</div>
 	<noscript>
-		<p>Varvara emulator requires javascript,<br />try other <a href='https://wiki.xxiivv.com/site/varvara.html'>emulator options</a>.</p>
+		<div class='noscript'>
+			<img src='pyur.svg' width='40'/>
+			<p>Varvara emulator requires javascript,<br />try other <a href='https://wiki.xxiivv.com/site/varvara.html'>emulator options</a>.</p>
+		</div>
 	</noscript>
 	<script src="src/uxn.js"></script>
 	<!-- Comment this line out to use the vanilla js core -->
