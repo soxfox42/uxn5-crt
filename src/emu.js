@@ -31,6 +31,7 @@ function Emu ()
 		this.uxn.dev[port] = val
 		switch(port) {
 		// System
+		case 0x07: /* metadata */ this.system.metadata(peek16(this.uxn.dev, 0x06)); break;
 		case 0x03: this.system.expansion(peek16(this.uxn.dev, 0x02)); break;
 		case 0x08:
 		case 0x09:
@@ -89,7 +90,6 @@ function Emu ()
 	}
 
 	this.screen_callback = () => {
-		console.log("callback")
 		this.uxn.eval(peek16(this.uxn.dev, 0x20))
 	}
 
