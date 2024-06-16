@@ -81,7 +81,7 @@ emulator.init().then(() => {
 	if (m) {
 		let rom = b64decode(m[2]);
 		if (!m[1]) {
-		rom = decodeUlz(rom);
+			rom = decodeUlz(rom);
 		}
 		loadROM(rom);
 	}
@@ -89,14 +89,9 @@ emulator.init().then(() => {
 });
 
 function loadROM(rom) {
-	emulator.bgCanvas.style.width = ''
 	emulator.set_zoom(1)
 	emulator.uxn.load(rom).eval(0x0100);
 	share.setROM(rom);
-	}
-
-function toggle_zoom() {
-	emulator.toggle_zoom()
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -107,24 +102,24 @@ function ShareView(el) {
 	let rom;
 
 	async function toggleSharePopup() {
-	if (popupEl.style.display === "none") {
-	popupEl.style.display = "block";
-	inputEl.value = "...";
-	copyButtonEl.disabled = true;
-	const hash = "#r=" + await b64encode(encodeUlz(rom));
-	inputEl.value = `${window.location.protocol}//${window.location.host}${window.location.pathname}${window.location.search}${hash}`;
-	copyButtonEl.disabled = false;
-	} else {
-	popupEl.style.display = "none";
-	}
+		if (popupEl.style.display === "none") {
+			popupEl.style.display = "block";
+			inputEl.value = "...";
+			copyButtonEl.disabled = true;
+			const hash = "#r=" + await b64encode(encodeUlz(rom));
+			inputEl.value = `${window.location.protocol}//${window.location.host}${window.location.pathname}${window.location.search}${hash}`;
+			copyButtonEl.disabled = false;
+		} else {
+			popupEl.style.display = "none";
+		}
 	}
 
 	const shareButtonEl = document.createElement("button");
 	shareButtonEl.disabled = true;
 	shareButtonEl.innerHTML = `Share`
 	shareButtonEl.addEventListener("click", (ev) => {
-	ev.preventDefault();
-	toggleSharePopup();
+		ev.preventDefault();
+		toggleSharePopup();
 	});
 	el.appendChild(shareButtonEl);
 
@@ -138,17 +133,17 @@ function ShareView(el) {
 	popupEl.appendChild(inputEl);
 	const copyButtonEl = document.createElement("button");
 	copyButtonEl.addEventListener("click", async (ev) => {
-	ev.preventDefault();
-	await navigator.clipboard.writeText(inputEl.value);
-	toggleSharePopup();
+		ev.preventDefault();
+		await navigator.clipboard.writeText(inputEl.value);
+		toggleSharePopup();
 	});
 	copyButtonEl.innerHTML = `Copy`
 	popupEl.appendChild(copyButtonEl);
 
 	this.setROM = (v) => {
-	rom = v;
-	shareButtonEl.disabled = false;
-	popupEl.style.display = "none";
+		rom = v;
+		shareButtonEl.disabled = false;
+		popupEl.style.display = "none";
 		document.getElementById("share").style.display = "initial"
 	}
 }
