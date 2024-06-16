@@ -8,6 +8,8 @@ if (!isEmbed) {
 	document.body.className = "";
 }
 
+document.getElementById("content").style.display = "block"
+
 emulator.bgCanvas = document.getElementById("bgcanvas");
 emulator.fgCanvas = document.getElementById("fgcanvas");
 emulator.screen.bgctx = emulator.bgCanvas.getContext("2d", {"willReadFrequently": true})
