@@ -12,6 +12,15 @@ function Screen(emu)
 	this.height = 320
 	this.colors = [{r: 0, g: 0, b:0}];
 
+	this.init = () => {
+		if (!isEmbed) {
+			this.set_size(512, 320);
+		}
+		else{
+			this.set_size(window.innerWidth, window.innerHeight);
+		}
+	}
+
 	this.blank_screen = () => {
 		const c = this.colors[0]
 		this.bgctx.fillStyle = "rgba("+c.r.toString(10)+","+c.g.toString(10)+","+c.b.toString(10)+")"

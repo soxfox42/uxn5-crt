@@ -1,17 +1,18 @@
 'use strict'
 
-let isEmbed;
-try {
-  isEmbed = window.self !== window.top;
-} catch (e) {
-  isEmbed = true;
-}
-
-if (!isEmbed) {
-  document.body.className = "";
-}
+let isEmbed = window.self !== window.top;
 
 const emulator = new Emu()
+
+if (!isEmbed) {
+	document.body.className = "";
+}
+
+emulator.bgCanvas = document.getElementById("bgcanvas");
+emulator.fgCanvas = document.getElementById("fgcanvas");
+emulator.screen.bgctx = emulator.bgCanvas.getContext("2d", {"willReadFrequently": true})
+emulator.screen.fgctx = emulator.fgCanvas.getContext("2d", {"willReadFrequently": true})
+emulator.screen.init()
 
 const share = new ShareView(document.getElementById("share"));
 const target_fps = 60;
@@ -19,10 +20,6 @@ const target_fps = 60;
 emulator.init().then(() => {
   emulator.console.write_el = document.getElementById("console_std")
   emulator.console.error_el = document.getElementById("console_err")
-  emulator.bgCanvas = document.getElementById("bgcanvas");
-  emulator.fgCanvas = document.getElementById("fgcanvas");
-  emulator.screen.bgctx = emulator.bgCanvas.getContext("2d", {"willReadFrequently": true})
-  emulator.screen.fgctx = emulator.fgCanvas.getContext("2d", {"willReadFrequently": true})
   document.getElementById("screen").addEventListener("pointermove", emulator.pointer_moved)
   document.getElementById("screen").addEventListener("pointerdown", emulator.pointer_down)
   document.getElementById("screen").addEventListener("pointerup", emulator.pointer_up)
@@ -46,18 +43,11 @@ emulator.init().then(() => {
     emulator.screen_callback();
   }
 
-  
-
   setInterval(() => {
     window.requestAnimationFrame(step);
   }, 1000 / target_fps);
 
-  if(isEmbed){
-		emulator.screen.set_size(window.innerWidth, window.innerHeight);
-	}
-  else {
-	emulator.screen.set_size(512, 320);
-
+  if(!isEmbed) {
     // Support dropping files
     const target = document.body
     target.addEventListener("dragover", (event) => {
@@ -68,7 +58,7 @@ emulator.init().then(() => {
       let file = ev.dataTransfer.files[0], reader = new FileReader()
       reader.onload = function (event) {
         let rom = new Uint8Array(event.target.result)
-        emulator.screen.set_size(512, 320)
+		emulator.screen.init()
         loadROM(rom);
       };
       reader.readAsArrayBuffer(file)
@@ -78,7 +68,7 @@ emulator.init().then(() => {
         let file = event.target.files[0], reader = new FileReader()
       reader.onload = function (event) {
         let rom = new Uint8Array(event.target.result)
-        emulator.screen.set_size(512, 320)
+        emulator.screen.init()
         loadROM(rom);
       };
       reader.readAsArrayBuffer(file)
@@ -106,7 +96,6 @@ function loadROM(rom) {
 function toggle_zoom() {
 	emulator.toggle_zoom()
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////
 // Sharing
