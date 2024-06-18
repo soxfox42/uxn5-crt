@@ -2,16 +2,6 @@
 
 function Emu (embed)
 {
-	if (typeof UxnWASM !== 'undefined') {
-		console.log("Using WebAssembly core")
-		this.uxn = new (UxnWASM.Uxn)(this)
-	} else {
-		console.log("Using Vanilla JS core")
-		this.uxn = new Uxn(this)
-	}
-
-	this.el = null
-	this.zoom = 1
 	this.embed = embed
 	this.system = new System(this)
 	this.console = new Console(this)
@@ -21,54 +11,37 @@ function Emu (embed)
 	this.mouse = new Mouse(this)
 	this.file = new FileDvc(this)
 
+	if (typeof UxnWASM !== 'undefined') {
+		console.log("Using WebAssembly core")
+		this.uxn = new (UxnWASM.Uxn)(this)
+	} else {
+		console.log("Using Vanilla JS core")
+		this.uxn = new Uxn(this)
+	}
+
 	this.init = (embed) => {
-		this.el = document.getElementById("emulator")
-
-		// Support dropping files
-		document.body.addEventListener("dragover", (e) => {
-			e.preventDefault();
-		});
-		document.body.addEventListener("drop", (e) => {
-			e.preventDefault();
-			this.load_file(e.dataTransfer.files[0])
-		});
-
-		// Browse button
-		document.getElementById("browser").addEventListener("change", (e) => {
-			this.load_file(e.target.files[0])
-		});
-
-		/* console */
-		this.console.input_el = document.getElementById("console_input")
-		this.console.input_el.addEventListener("keyup", (event) => {
-			if (event.key === "Enter") {
-				let query = this.console.input_el.value
-				for (let i = 0; i < query.length; i++)
-					emulator.console.input(query.charAt(i).charCodeAt(0), 1)
-				emulator.console.input(0x0a, 1)
-				this.console.input_el.value = ""
-			}
-		});
-
-		this.console.write_el = document.getElementById("console_std")
-		this.console.error_el = document.getElementById("console_err")
-
-		/* screen */
+		/* start devices */
+		this.console.init()
 		this.screen.init()
-		this.screen.el.addEventListener("pointermove", this.pointer_moved)
-		this.screen.el.addEventListener("pointerdown", this.pointer_down)
-		this.screen.el.addEventListener("pointerup", this.pointer_up)
-
-		window.addEventListener("keydown", emulator.controller.keyevent)
-		window.addEventListener("keyup", emulator.controller.keyevent)
-
-		/* reveal */
-		this.el.style.display = "block"
-		document.body.className = emulator.embed ? "embed" : "default"
-		document.title = "Varvara Emulator"
-
+		this.controller.init()
+		/* start cpu */
 		this.uxn.init(this).then(() => {
-			// Rom in url
+			/* Reveal */
+			document.body.className = emulator.embed ? "embed" : "default"
+			document.title = "Varvara Emulator"
+			// Enable drag/drop load
+			document.body.addEventListener("dragover", (e) => {
+				e.preventDefault();
+			});
+			document.body.addEventListener("drop", (e) => {
+				e.preventDefault();
+				emulator.load_file(e.dataTransfer.files[0])
+			});
+			// Enable button load
+			document.getElementById("browser").addEventListener("change", (e) => {
+				emulator.load_file(e.target.files[0])
+			});
+			// Decode rom in url
 			const rom_url = window.location.hash.match(/r(om)?=([^&]+)/);
 			if (rom_url) {
 				let rom = b64decode(rom_url[2]);
@@ -77,7 +50,7 @@ function Emu (embed)
 				}
 				emulator.load(rom);
 			}
-
+			// Start screen vector
 			setInterval(() => {
 				window.requestAnimationFrame(() => {
 					this.uxn.eval(peek16(this.uxn.dev, 0x20))
@@ -86,19 +59,18 @@ function Emu (embed)
 		})
 	}
 
-	this.load = (rom) => {
-		this.set_zoom(1)
-		this.uxn.load(rom).eval(0x0100);
-		share.setROM(rom);
-	}
-
 	this.load_file = (file) => {
 		let reader = new FileReader()
 		reader.onload = (e) => {
-			this.screen.init()
 			this.load(new Uint8Array(e.target.result));
 		};
 		reader.readAsArrayBuffer(file)
+	}
+
+	this.load = (rom) => {
+		this.screen.set_zoom(1)
+		this.uxn.load(rom).eval(0x0100);
+		share.setROM(rom);
 	}
 
 	this.dei = (port) => {
@@ -128,11 +100,11 @@ function Emu (embed)
 		// Screen
 		case 0x22, 0x23:
 			this.screen.set_width(peek16(this.uxn.dev, 0x22))
-			this.set_zoom(this.zoom)
+			this.screen.set_zoom(this.screen.zoom)
 			break;
 		case 0x24, 0x25:
 			this.screen.set_height(peek16(this.uxn.dev, 0x24))
-			this.set_zoom(this.zoom)
+			this.screen.set_zoom(this.screen.zoom)
 			break;
 		case 0x2e: {
 			const x = peek16(this.uxn.dev, 0x28)
@@ -151,37 +123,6 @@ function Emu (embed)
 			break; }
 		}
 	}
-
-	this.pointer_moved = (event) => {
-		const bounds = this.screen.bgCanvas.getBoundingClientRect()
-		const x = this.screen.bgCanvas.width * (event.clientX - bounds.left) / bounds.width
-		const y = this.screen.bgCanvas.height * (event.clientY - bounds.top) / bounds.height
-		this.mouse.move(x, y)
-		event.preventDefault()
-	}
-
-	this.pointer_down = (event) => {
-		this.pointer_moved(event)
-		this.mouse.down(event.buttons)
-		event.preventDefault()
-	}
-
-	this.pointer_up = (event) => {
-		this.mouse.up(event.buttons)
-		event.preventDefault();
-	}
-
-	this.toggle_zoom = () => {
-		this.set_zoom(this.zoom == 2 ? 1 : 2)
-	}
-
-	this.set_zoom = (zoom) => {
-		this.screen.el.style.marginLeft = -(this.screen.width / 2 * zoom) + "px"
-		this.screen.el.style.width = (this.screen.width * zoom) + "px"
-		this.screen.el.style.height = (this.screen.height * zoom) + "px"
-		this.screen.bgCanvas.style.width = this.screen.fgCanvas.style.width = (this.screen.width * zoom) + "px"
-		this.zoom = zoom
-	}
 }
 
 function peek16(mem, addr) {
@@ -191,7 +132,6 @@ function peek16(mem, addr) {
 function poke16(mem, addr, val) {
 	mem[addr] = val >> 8, mem[addr + 1] = val;
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////
 // Sharing
