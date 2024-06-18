@@ -1,15 +1,9 @@
 'use strict'
 
-const share_el = document.getElementById("share")
-const emulator = new Emu()
-
-/* Detect Embed */
-let isEmbed = window.self !== window.top;
-if (!isEmbed) {
-	document.body.className = "";
-}
+const emulator = new Emu(window.self !== window.top)
 
 /* misc */
+const share_el = document.getElementById("share")
 const share = new ShareView(share_el);
 
 emulator.init().then(() => {
@@ -25,7 +19,11 @@ emulator.init().then(() => {
 		window.requestAnimationFrame(step);
 	}, 1000 / 60);
 
-	if(!isEmbed) {
+	if(emulator.embed){
+		document.body.className = "embed";
+	}
+
+	if(!emulator.embed) {
 		// Support dropping files
 		const target = document.body
 		target.addEventListener("dragover", (event) => {

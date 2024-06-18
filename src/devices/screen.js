@@ -18,8 +18,8 @@ function Screen(emu)
 		this.fgCanvas = document.getElementById("fgcanvas");
 		this.bgctx = this.bgCanvas.getContext("2d", {"willReadFrequently": true})
 		this.fgctx = this.fgCanvas.getContext("2d", {"willReadFrequently": true})
-		if (!isEmbed) { this.set_size(512, 320); }
-		else{ this.set_size(window.innerWidth, window.innerHeight); }
+		if (emu.embed) { this.set_size(window.innerWidth, window.innerHeight) }
+		else{ this.set_size(512, 320) }
 	}
 
 	this.blank_screen = () => {

@@ -1,9 +1,10 @@
 'use strict'
 
-function Emu ()
+function Emu (embed)
 {
-	this.el = null;
-	this.zoom = 1;
+	this.el = null
+	this.zoom = 1
+	this.embed = embed
 	this.system = new System(this)
 	this.console = new Console(this)
 	this.controller = new Controller(this)
@@ -12,7 +13,7 @@ function Emu ()
 	this.mouse = new Mouse(this)
 	this.file = new FileDvc(this)
 
-	this.init = () => {
+	this.init = (embed) => {
 		this.el = document.getElementById("emulator")
 
 		/* console */
