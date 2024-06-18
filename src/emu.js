@@ -2,13 +2,7 @@
 
 function Emu ()
 {
-	if (typeof UxnWASM !== 'undefined') {
-		console.log("Using WebAssembly core")
-		this.uxn = new (UxnWASM.Uxn)(this)
-	} else {
-		console.log("Using Vanilla JS core")
-		this.uxn = new Uxn(this)
-	}
+	this.el = null;
 	this.zoom = 1;
 	this.system = new System(this)
 	this.console = new Console(this)
@@ -18,9 +12,49 @@ function Emu ()
 	this.mouse = new Mouse(this)
 	this.file = new FileDvc(this)
 
+	this.init = () => {
+		this.el = document.getElementById("emulator")
+
+		/* console */
+		this.console.input_el = document.getElementById("console_input")
+		this.console.input_el.addEventListener("keyup", (event) => {
+			if (event.key === "Enter") {
+				let query = this.console.input_el.value
+				for (let i = 0; i < query.length; i++)
+					emulator.console.input(query.charAt(i).charCodeAt(0), 1)
+				emulator.console.input(0x0a, 1)
+				this.console.input_el.value = ""
+			}
+		});
+
+		this.console.write_el = document.getElementById("console_std")
+		this.console.error_el = document.getElementById("console_err")
+
+		/* screen */
+		this.screen.init()
+		this.screen.el.addEventListener("pointermove", this.pointer_moved)
+		this.screen.el.addEventListener("pointerdown", this.pointer_down)
+		this.screen.el.addEventListener("pointerup", this.pointer_up)
+
+		window.addEventListener("keydown", emulator.controller.keyevent)
+		window.addEventListener("keyup", emulator.controller.keyevent)
+
+		/* reveal */
+		this.el.style.display = "block"
+
+		return this.uxn.init(this)
+	}
+
+	if (typeof UxnWASM !== 'undefined') {
+		console.log("Using WebAssembly core")
+		this.uxn = new (UxnWASM.Uxn)(this)
+	} else {
+		console.log("Using Vanilla JS core")
+		this.uxn = new Uxn(this)
+	}
+
 	this.dei = (port) => {
-		const d = port & 0xf0
-		switch (d) {
+		switch (port & 0xf0) {
 		case 0xc0: return this.datetime.dei(port)
 		case 0x20: return this.screen.dei(port)
 		}
@@ -31,7 +65,7 @@ function Emu ()
 		this.uxn.dev[port] = val
 		switch(port) {
 		// System
-		case 0x07: /* metadata */ this.system.metadata(peek16(this.uxn.dev, 0x06)); break;
+		case 0x07: this.system.metadata(peek16(this.uxn.dev, 0x06)); break;
 		case 0x03: this.system.expansion(peek16(this.uxn.dev, 0x02)); break;
 		case 0x08:
 		case 0x09:
@@ -103,11 +137,6 @@ function Emu ()
 		this.screen.el.style.height = (this.screen.height * zoom) + "px"
 		this.screen.bgCanvas.style.width = this.screen.fgCanvas.style.width = (this.screen.width * zoom) + "px"
 		this.zoom = zoom
-	}
-
-	this.init = () => {
-		this.screen.init()
-		return this.uxn.init(this);
 	}
 }
 

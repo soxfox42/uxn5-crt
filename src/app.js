@@ -1,6 +1,5 @@
 'use strict'
 
-const content_el = document.getElementById("content")
 const share_el = document.getElementById("share")
 const emulator = new Emu()
 
@@ -11,30 +10,11 @@ if (!isEmbed) {
 }
 
 /* misc */
-
-content_el.style.display = "block"
 const share = new ShareView(share_el);
 
 emulator.init().then(() => {
-	emulator.console.write_el = document.getElementById("console_std")
-	emulator.console.error_el = document.getElementById("console_err")
-	emulator.screen.el.addEventListener("pointermove", emulator.pointer_moved)
-	emulator.screen.el.addEventListener("pointerdown", emulator.pointer_down)
-	emulator.screen.el.addEventListener("pointerup", emulator.pointer_up)
-	window.addEventListener("keydown", emulator.controller.keyevent);
-	window.addEventListener("keyup", emulator.controller.keyevent);
 
-	// Console Input Field
-	const console_input = document.getElementById("console_input")
-	console_input.addEventListener("keyup", function(event) {
-		if (event.key === "Enter") {
-			let query = console_input.value
-			for (let i = 0; i < query.length; i++)
-			emulator.console.input(query.charAt(i).charCodeAt(0), 1)
-			emulator.console.input(0x0a, 1)
-			console_input.value = ""
-		}
-	});
+	
 
 	// Animation callback
 	function step() {
