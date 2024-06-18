@@ -64,12 +64,26 @@ function Emu (embed)
 
 		/* reveal */
 		this.el.style.display = "block"
+		document.body.className = emulator.embed ? "embed" : "default"
+		document.title = "Varvara Emulator"
 
-		if(emulator.embed){
-			document.body.className = "embed";
-		}
-		document.title = "Varvara Emulator";
-		return this.uxn.init(this)
+		this.uxn.init(this).then(() => {
+			// Rom in url
+			const rom_url = window.location.hash.match(/r(om)?=([^&]+)/);
+			if (rom_url) {
+				let rom = b64decode(rom_url[2]);
+				if(!rom_url[1]) {
+					rom = decodeUlz(rom);
+				}
+				emulator.load(rom);
+			}
+
+			setInterval(() => {
+				window.requestAnimationFrame(() => {
+					this.uxn.eval(peek16(this.uxn.dev, 0x20))
+				});
+			}, 1000 / 60);
+		})
 	}
 
 	this.load = (rom) => {
@@ -155,10 +169,6 @@ function Emu (embed)
 	this.pointer_up = (event) => {
 		this.mouse.up(event.buttons)
 		event.preventDefault();
-	}
-
-	this.screen_callback = () => {
-		this.uxn.eval(peek16(this.uxn.dev, 0x20))
 	}
 
 	this.toggle_zoom = () => {
