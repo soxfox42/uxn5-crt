@@ -2,6 +2,14 @@
 
 function Emu (embed)
 {
+	if (typeof UxnWASM !== 'undefined') {
+		console.log("Using WebAssembly core")
+		this.uxn = new (UxnWASM.Uxn)(this)
+	} else {
+		console.log("Using Vanilla JS core")
+		this.uxn = new Uxn(this)
+	}
+
 	this.el = null
 	this.zoom = 1
 	this.embed = embed
@@ -43,15 +51,17 @@ function Emu (embed)
 		/* reveal */
 		this.el.style.display = "block"
 
+		if(emulator.embed){
+			document.body.className = "embed";
+		}
+
 		return this.uxn.init(this)
 	}
 
-	if (typeof UxnWASM !== 'undefined') {
-		console.log("Using WebAssembly core")
-		this.uxn = new (UxnWASM.Uxn)(this)
-	} else {
-		console.log("Using Vanilla JS core")
-		this.uxn = new Uxn(this)
+	this.load = (rom) => {
+		this.set_zoom(1)
+		this.uxn.load(rom).eval(0x0100);
+		share.setROM(rom);
 	}
 
 	this.dei = (port) => {

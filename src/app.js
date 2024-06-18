@@ -2,13 +2,11 @@
 
 const emulator = new Emu(window.self !== window.top)
 
-/* misc */
+/* share */
 const share_el = document.getElementById("share")
 const share = new ShareView(share_el);
 
 emulator.init().then(() => {
-
-	
 
 	// Animation callback
 	function step() {
@@ -19,33 +17,29 @@ emulator.init().then(() => {
 		window.requestAnimationFrame(step);
 	}, 1000 / 60);
 
-	if(emulator.embed){
-		document.body.className = "embed";
-	}
-
 	if(!emulator.embed) {
 		// Support dropping files
 		const target = document.body
-		target.addEventListener("dragover", (event) => {
-			event.preventDefault();
+		target.addEventListener("dragover", (e) => {
+			e.preventDefault();
 		});
-		target.addEventListener("drop", (ev) => {
-			ev.preventDefault();
-			let file = ev.dataTransfer.files[0], reader = new FileReader()
+		target.addEventListener("drop", (e) => {
+			e.preventDefault();
+			let file = e.dataTransfer.files[0], reader = new FileReader()
 			reader.onload = function (event) {
-			let rom = new Uint8Array(event.target.result)
-					emulator.screen.init()
-			loadROM(rom);
+				let rom = new Uint8Array(event.target.result)
+				emulator.screen.init()
+				emulator.load(rom);
 			};
 			reader.readAsArrayBuffer(file)
 		});
 
-		document.getElementById("browser").addEventListener("change", function(event) {
-			let file = event.target.files[0], reader = new FileReader()
+		document.getElementById("browser").addEventListener("change", (e) => {
+			let file = e.target.files[0], reader = new FileReader()
 			reader.onload = function (event) {
 				let rom = new Uint8Array(event.target.result)
 				emulator.screen.init()
-				loadROM(rom);
+				emulator.load(rom);
 			};
 			reader.readAsArrayBuffer(file)
 		});
@@ -57,16 +51,12 @@ emulator.init().then(() => {
 		if (!m[1]) {
 			rom = decodeUlz(rom);
 		}
-		loadROM(rom);
+		emulator.load(rom);
 	}
 	document.title = "Varvara Emulator";
 });
 
-function loadROM(rom) {
-	emulator.set_zoom(1)
-	emulator.uxn.load(rom).eval(0x0100);
-	share.setROM(rom);
-}
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // Sharing
