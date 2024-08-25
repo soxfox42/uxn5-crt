@@ -48,7 +48,7 @@ function Emu (embed)
 				if(!rom_url[1]) {
 					rom = decodeUlz(rom);
 				}
-				emulator.load(rom);
+				emulator.load(rom, true);
 			}
 			// Start screen vector
 			setInterval(() => {
@@ -67,10 +67,13 @@ function Emu (embed)
 		reader.readAsArrayBuffer(file)
 	}
 
-	this.load = (rom) => {
+	this.load = (rom, fromURL = false) => {
 		this.screen.set_zoom(1)
 		this.uxn.load(rom).eval(0x0100);
 		share.setROM(rom);
+		if (fromURL) {
+			save.setROM(rom);
+		}
 	}
 
 	this.dei = (port) => {
@@ -136,6 +139,37 @@ function poke16(mem, addr, val) {
 ////////////////////////////////////////////////////////////////////////////////
 // Sharing
 ////////////////////////////////////////////////////////////////////////////////
+
+const save_el = document.getElementById("save")
+const save = new SaveView(save_el)
+
+function SaveView(el) {
+	let rom;
+	const saveButtonEl = document.createElement("button");
+	saveButtonEl.disabled = true;
+	saveButtonEl.style.display = "none"
+	saveButtonEl.innerHTML = `Save`
+
+	saveButtonEl.addEventListener("click", (ev) => {
+		ev.preventDefault();
+
+		let blob = new Blob([rom]);
+		let blobUrl = URL.createObjectURL(blob);
+		let link = document.createElement("a");
+		link.href = blobUrl;
+		link.download = "saved.rom"
+		link.click()
+		URL.revokeObjectURL(blobUrl)
+		link.remove()
+	});
+	el.appendChild(saveButtonEl);
+
+	this.setROM = (v) => {
+		rom = v;
+		saveButtonEl.disabled = false;
+		saveButtonEl.style.display = "initial"
+	}
+}
 
 const share_el = document.getElementById("share")
 const share = new ShareView(share_el);
