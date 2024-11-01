@@ -26,6 +26,11 @@ function Emu (embed)
 		this.controller.init()
 		/* start cpu */
 		this.uxn.init(this).then(() => {
+			this.screen.el.addEventListener("pointermove", this.mouse.on_move)
+			this.screen.el.addEventListener("pointerdown", this.mouse.on_down)
+			this.screen.el.addEventListener("pointerup", this.mouse.on_up)
+			this.screen.el.addEventListener("wheel", this.mouse.on_scroll)
+
 			/* Reveal */
 			document.body.className = emulator.embed ? "embed" : "default"
 			document.title = "Varvara Emulator"
