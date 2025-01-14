@@ -1,1 +1,1 @@
-let boot_rom;
+const boot_rom;
