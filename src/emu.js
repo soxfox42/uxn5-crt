@@ -55,6 +55,10 @@ function Emu (embed)
 				}
 				emulator.load(rom, true);
 			}
+			// Get boot rom
+			else if(boot_rom){
+				emulator.load(boot_rom, true);
+			}
 			// Start screen vector
 			setInterval(() => {
 				window.requestAnimationFrame(() => {
