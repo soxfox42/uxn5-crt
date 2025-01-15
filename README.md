@@ -1,6 +1,12 @@
 # Uxn5
 
-An emulator for the [Uxn stack-machine](https://wiki.xxiivv.com/site/uxn.html), written in Javascript. Check out a live demo at [rabbits.srht.site/uxn5](https://rabbits.srht.site/uxn5/)
+An emulator for the [Uxn stack-machine](https://wiki.xxiivv.com/site/uxn.html), written in Javascript. Check out a live demo at [uxn5.soxfox.me](https://uxn5.soxfox.me).
+
+## CRT Shader
+
+This is my personal version of uxn5 with a CRT shader:
+
+![CRT Shader Example](crt_shader.png)
 
 ## Usage
 
