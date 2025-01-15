@@ -1,2 +1,2 @@
-const boot_rom;
-const default_zoom;
+const boot_rom = [];
+const default_zoom = 1;
