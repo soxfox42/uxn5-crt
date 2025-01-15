@@ -63,6 +63,7 @@ function Emu (embed)
 			setInterval(() => {
 				window.requestAnimationFrame(() => {
 					this.uxn.eval(peek16(this.uxn.dev, 0x20))
+					this.screen.flip();
 				});
 			}, 1000 / 60);
 		})

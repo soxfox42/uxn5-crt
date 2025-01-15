@@ -19,7 +19,7 @@ function Mouse(emu)
 	}
 
 	this.on_move = (event) => {
-		const bounds = emu.screen.bgCanvas.getBoundingClientRect()
+		const bounds = emu.screen.renderCanvas.getBoundingClientRect()
 		const x = emu.screen.bgCanvas.width * (event.clientX - bounds.left) / bounds.width
 		const y = emu.screen.bgCanvas.height * (event.clientY - bounds.top) / bounds.height
 		this.move(x, y)

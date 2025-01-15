@@ -15,10 +15,17 @@ function Screen(emu)
 	
 	this.init = () => {
 		this.el = document.getElementById("screen")
-		this.bgCanvas = document.getElementById("bgcanvas");
-		this.fgCanvas = document.getElementById("fgcanvas");
+		this.bgCanvas = new OffscreenCanvas(100, 100);
+		this.fgCanvas = new OffscreenCanvas(100, 100);
+		this.renderCanvas = document.getElementById("canvas");
 		this.bgctx = this.bgCanvas.getContext("2d", {"willReadFrequently": true})
 		this.fgctx = this.fgCanvas.getContext("2d", {"willReadFrequently": true})
+		this.renderctx = this.renderCanvas.getContext("webgl");
+		(async () => {
+			const response = await fetch("/shader.glsl");
+			this.crt_fragment_source = await response.text();
+			this.init_gl();
+		})()
 		if (emu.embed) { this.set_size(window.innerWidth, window.innerHeight) }
 		else{ this.set_size(512, 320) }
 	}
@@ -30,7 +37,9 @@ function Screen(emu)
 	this.set_zoom = (zoom) => {
 		this.el.style.width = (this.width * zoom) + "px"
 		this.el.style.height = (this.height * zoom) + "px"
-		this.bgCanvas.style.width = this.fgCanvas.style.width = (this.width * zoom) + "px"
+		this.renderCanvas.style.width = (this.width * zoom) + "px"
+		this.renderCanvas.width = this.width * zoom;
+		this.renderCanvas.height = this.height * zoom;
 		this.zoom = zoom
 	}
 
@@ -120,6 +129,7 @@ function Screen(emu)
 		this.el.style.width = w + "px"
 		this.fgctx.canvas.width = w;
 		this.bgctx.canvas.width = w;
+		this.renderctx.canvas.width = w;
 		this.width = w;
 		this.blank_screen()
 	}
@@ -128,6 +138,7 @@ function Screen(emu)
 		this.el.style.height = h + "px"
 		this.bgctx.canvas.height = h;
 		this.fgctx.canvas.height = h;
+		this.renderctx.canvas.height = h;
 		this.height = h;
 		this.blank_screen()
 	}
@@ -156,5 +167,135 @@ function Screen(emu)
 			this.colors[i] = { r: red << 4 | red, g: green << 4 | green, b: blue << 4 | blue }
 		}
 		this.blank_screen()
+	}
+
+	this.init_gl = () => {
+		/** @type {WebGLRenderingContext} */
+		const gl = this.renderctx;
+
+		const compileShader = (type, source) => {
+			const shader = gl.createShader(type);
+			gl.shaderSource(shader, source);
+			gl.compileShader(shader);
+			if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+				throw new Error("Shader failed: " + gl.getShaderInfoLog(shader));
+			}
+			return shader;
+		};
+
+		const compileProgram = (vert, frag) => {
+			const program = gl.createProgram();
+			gl.attachShader(program, compileShader(gl.VERTEX_SHADER, vert));
+			gl.attachShader(program, compileShader(gl.FRAGMENT_SHADER, frag));
+			gl.linkProgram(program);
+			if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+				throw new Error("Shader program failed: " + gl.getProgramInfoLog(program));
+			}
+
+			const info = {
+				program,
+				attribs: {
+					aPosition: gl.getAttribLocation(program, "aPosition"),
+				},
+				uniforms: {},
+			};
+
+			const uniformCount = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
+			for (let i = 0; i < uniformCount; i++) {
+				const uniform = gl.getActiveUniform(program, i);
+				info.uniforms[uniform.name] = gl.getUniformLocation(program, uniform.name);
+			}
+
+			return info;
+		};
+
+		const vertexSource = `
+			precision mediump float;
+			attribute vec4 aPosition;
+			varying vec2 vTexCoord;
+			void main() {
+				vTexCoord = aPosition.xy * vec2(0.5, -0.5) + 0.5;
+				gl_Position = aPosition;
+			}
+		`;
+
+		const basicFragmentSource = `
+			precision mediump float;
+			varying vec2 vTexCoord;
+			uniform sampler2D uTextureFG;
+			uniform sampler2D uTextureBG;
+			void main() {
+				vec4 fg = texture2D(uTextureFG, vTexCoord);
+				vec4 bg = texture2D(uTextureBG, vTexCoord);
+				gl_FragColor = mix(bg, fg, fg.a);
+			}
+		`;
+
+		this.basic_shader = compileProgram(vertexSource, basicFragmentSource);
+		this.crt_shader = compileProgram(vertexSource, this.crt_fragment_source);
+		this.shader = this.basic_shader;
+
+		this.vertex_buffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.vertex_buffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+			1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, -1.0
+		]), gl.STATIC_DRAW);
+
+		this.textures = {
+			fg: gl.createTexture(),
+			bg: gl.createTexture(),
+		};
+
+		[this.textures.fg, this.textures.bg].forEach(tex => {
+			gl.bindTexture(gl.TEXTURE_2D, tex);
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+		});
+
+		this.gl_ready = true;
+	}
+
+	this.flip = () => {
+		if (!this.gl_ready) return;
+
+		/** @type {WebGLRenderingContext} */
+		const gl = this.renderctx;
+		gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+
+		gl.useProgram(this.shader.program);
+
+		gl.bindBuffer(gl.ARRAY_BUFFER, this.vertex_buffer);
+		gl.vertexAttribPointer(this.shader.attribs.aPosition, 2, gl.FLOAT, false, 0, 0);
+		gl.enableVertexAttribArray(this.shader.attribs.aPosition);
+
+		gl.activeTexture(gl.TEXTURE0)
+		gl.bindTexture(gl.TEXTURE_2D, this.textures.bg);
+		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this.bgctx.canvas)
+		gl.uniform1i(this.shader.uniforms.uTextureBG, 0);
+
+		gl.activeTexture(gl.TEXTURE1)
+		gl.bindTexture(gl.TEXTURE_2D, this.textures.fg);
+		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this.fgctx.canvas)
+		gl.uniform1i(this.shader.uniforms.uTextureFG, 1);
+
+		gl.uniform3f(this.shader.uniforms.iResolution, gl.canvas.width, gl.canvas.height, 1);
+		gl.uniform1f(this.shader.uniforms.resolutionDownScale, 1);
+		gl.uniform1f(this.shader.uniforms.hardScan, -8);
+		gl.uniform1f(this.shader.uniforms.hardPix, -3);
+		gl.uniform2f(this.shader.uniforms.warp, 1 / 32, 1 / 24);
+		gl.uniform1f(this.shader.uniforms.maskDark, 0.5);
+		gl.uniform1f(this.shader.uniforms.maskLight, 1.5);
+
+		gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+	}
+
+	this.toggle_crt = () => {
+		if (this.shader === this.basic_shader) {
+			this.shader = this.crt_shader;
+		} else {
+			this.shader = this.basic_shader;
+		}
 	}
 }
