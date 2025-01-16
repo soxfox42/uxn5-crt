@@ -15,8 +15,8 @@ function Screen(emu)
 	
 	this.init = () => {
 		this.el = document.getElementById("screen")
-		this.bgCanvas = new OffscreenCanvas(100, 100);
-		this.fgCanvas = new OffscreenCanvas(100, 100);
+		this.bgCanvas = new OffscreenCanvas(this.width, this.height);
+		this.fgCanvas = new OffscreenCanvas(this.width, this.height);
 		this.renderCanvas = document.getElementById("canvas");
 		this.bgctx = this.bgCanvas.getContext("2d", {"willReadFrequently": true})
 		this.fgctx = this.fgCanvas.getContext("2d", {"willReadFrequently": true})
@@ -233,7 +233,7 @@ function Screen(emu)
 
 		this.basic_shader = compileProgram(vertexSource, basicFragmentSource);
 		this.crt_shader = compileProgram(vertexSource, this.crt_fragment_source);
-		this.shader = this.basic_shader;
+		this.shader = this.crt_shader;
 
 		this.vertex_buffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vertex_buffer);
