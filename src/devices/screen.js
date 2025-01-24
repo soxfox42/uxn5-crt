@@ -14,7 +14,6 @@ function Screen(emu)
 		[2, 3, 1, 2, 2, 3, 1, 2, 2, 3, 1, 2, 2, 3, 1, 2]];
 
 	this.pixels = 0
-	this.palette = []
 	this.scale = 1
 	this.zoom = 1
 	this.width = 0
@@ -48,18 +47,32 @@ function Screen(emu)
 		if(y2 > this.y2) this.y2 = y2;
 	}
 
+	this.palette = [
+		[0x00,0x00,0x00],
+		[0xff,0xff,0x00],
+		[0x00,0xff,0xff],
+		[0xff,0x00,0xff]]
+	// #375e .System/r DEO2
+	// #286c .System/g DEO2
+	// #2358 .System/b DEO2
+
 	this.update_palette = () => {
-		let i, shift, colors = [];
-		for(i = 0, shift = 4; i < 4; ++i, shift ^= 4) {
+		let i, sft, shift, colors = [];
+		let r = emu.uxn.dev[0x8] << 8 | emu.uxn.dev[0x9]
+		let g = emu.uxn.dev[0xa] << 8 | emu.uxn.dev[0xb]
+		let b = emu.uxn.dev[0xc] << 8 | emu.uxn.dev[0xd]
+		console.log("update-palette")
+		for(i = 0, sft = 12; i < 4; ++i, sft -= 4) {
 			let
-				r = (emu.uxn.dev[0x8 + i / 2] >> shift) & 0xf,
-				g = (emu.uxn.dev[0xa + i / 2] >> shift) & 0xf,
-				b = (emu.uxn.dev[0xc + i / 2] >> shift) & 0xf;
-			colors[i] = 0x0f000000 | r << 16 | g << 8 | b;
-			colors[i] |= colors[i] << 4;
+				cr = (r >> sft) & 0xf,
+				cg = (g >> sft) & 0xf,
+				cb = (b >> sft) & 0xf;
+			this.palette[i][0] = cr | (cr << 4)
+			this.palette[i][1] = cg | (cg << 4)
+			this.palette[i][2] = cb | (cb << 4)
+			console.log(i,r,g,b, this.palette[i])
 		}
-		for(i = 0; i < 16; i++)
-			this.palette[i] = colors[(i >> 2) ? (i >> 2) : (i & 3)]
+		console.log(this.palette)
 		this.change(0, 0, this.width, this.height);
 	}
 
@@ -85,17 +98,16 @@ function Screen(emu)
 	
 	this.redraw = () => {
 		let i, x, y, k, l;
-		let colors = [[0x00,0x00,0x00],[0xff,0xff,0x00],[0x00,0xff,0xff],[0xff,0x00,0xff]]
 		for(y = this.y1; y < this.y2; y++) {
 			let ys = y * this.scale;
 			for(x = this.x1, i = MAR(x) + MAR(y) * MAR2(this.width); x < this.x2; x++, i++) {
-				let color = this.layers.fg[i] ? this.layers.fg[i] : this.layers.bg[i]
+				let color = this.palette[this.layers.fg[i] ? this.layers.fg[i] : this.layers.bg[i]]
 				for(k = 0; k < this.scale; k++) {
 					let oo = ((ys + k) * this.width + x) * this.scale * 4;
 					for(l = 0; l < this.scale; l++){
-						this.pixels[oo + l + 0] = colors[color][0]
-						this.pixels[oo + l + 1] = colors[color][1]
-						this.pixels[oo + l + 2] = colors[color][2]
+						this.pixels[oo + l + 0] = color[0]
+						this.pixels[oo + l + 1] = color[1]
+						this.pixels[oo + l + 2] = color[2]
 						this.pixels[oo + l + 3] = 0xff
 					}
 				}
@@ -212,14 +224,10 @@ function Screen(emu)
 					}
 				}
 			}
-			if(fx < 0)
-				x1 = x, x2 = rX;
-			else
-				x1 = rX, x2 = x;
-			if(fy < 0)
-				y1 = y, y2 = rY;
-			else
-				y1 = rY, y2 = y;
+			if(fx < 0) x1 = x, x2 = rX;
+			else x1 = rX, x2 = x;
+			if(fy < 0) y1 = y, y2 = rY;
+			else y1 = rY, y2 = y;
 			this.change(x1 - 8, y1 - 8, x2 + 8, y2 + 8);
 			if(rMX) rX += rDX * fx;
 			if(rMY) rY += rDY * fy;
