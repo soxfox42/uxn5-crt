@@ -64,11 +64,24 @@ function Emu (embed)
 				window.requestAnimationFrame(() => {
 					this.uxn.eval(peek16(this.uxn.dev, 0x20))
 					if(this.screen.changed()) {
+						let x = this.screen.x1 * this.screen.scale, y = this.screen.y1 * this.screen.scale;
+						let w = this.screen.x2 * this.screen.scale - x, h = this.screen.y2 * this.screen.scale - y;
 						this.screen.redraw()
+						/* draw screen */
+						const pixelsid = new ImageData(this.screen.pixels, this.screen.width, this.screen.height)
+						this.screen.displayctx.putImageData(pixelsid,0,0);
 					}
 				});
 			}, 1000 / 60);
 		})
+	}
+
+	this.resize = (width, height) => {
+		console.log(`Resize requested: ${width}x${height}`)
+		this.screen.el.style.width = width + "px"
+		this.screen.el.style.height = height + "px"
+		this.screen.displayctx.canvas.width = width;
+		this.screen.displayctx.canvas.height = height;
 	}
 
 	this.load_file = (file) => {
@@ -107,35 +120,11 @@ function Emu (embed)
 		case 0x0a:
 		case 0x0b:
 		case 0x0c:
-		case 0x0d: this.screen.update_palette(); this.screen.palette(); break;
+		case 0x0d: this.screen.update_palette(); this.screen.update_palette(); break;
 		case 0x0f: console.warn("Program ended."); break;
 		// Console
 		case 0x18: this.console.write(val); break;
 		case 0x19: this.console.error(val); break;
-		// Screen
-		case 0x22, 0x23:
-			this.screen.set_width(peek16(this.uxn.dev, 0x22))
-			this.screen.set_zoom(this.screen.zoom)
-			break;
-		case 0x24, 0x25:
-			this.screen.set_height(peek16(this.uxn.dev, 0x24))
-			this.screen.set_zoom(this.screen.zoom)
-			break;
-		case 0x2e: {
-			const x = peek16(this.uxn.dev, 0x28)
-			const y = peek16(this.uxn.dev, 0x2a)
-			const move = this.uxn.dev[0x26]
-			const ctrl = this.uxn.dev[0x2e]
-			this.screen.draw_pixel(ctrl, x, y, move);
-			break; }
-		case 0x2f: {
-			const x = peek16(this.uxn.dev, 0x28)
-			const y = peek16(this.uxn.dev, 0x2a)
-			const move = this.uxn.dev[0x26]
-			const ctrl = this.uxn.dev[0x2f]
-			const ptr = peek16(this.uxn.dev, 0x2c)
-			this.screen.draw_sprite(ctrl, x, y, move, ptr);
-			break; }
 		}
 		switch(port & 0xf0) {
 			case 0x20: this.screen.deo(port); break;

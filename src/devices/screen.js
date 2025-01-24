@@ -13,27 +13,36 @@ function Screen(emu)
 		[1, 2, 3, 1, 1, 2, 3, 1, 1, 2, 3, 1, 1, 2, 3, 1],
 		[2, 3, 1, 2, 2, 3, 1, 2, 2, 3, 1, 2, 2, 3, 1, 2]];
 
+	this.pixels = 0
+	this.palette = []
+	this.scale = 1
 	this.zoom = 1
 	this.width = 0
 	this.height = 0
 	this.layers = {fg: 0, bg: 0};
 	this.colors = [{r: 0, g: 0, b:0}];
+	this.x1 = 0
+	this.y1 = 0
+	this.x2 = 0
+	this.y2 = 0
 
 	this.init = () => {
 		this.el = document.getElementById("screen")
 		this.bgCanvas = document.getElementById("bgcanvas");
 		this.fgCanvas = document.getElementById("fgcanvas");
+		this.display = document.getElementById("display");
 		this.bgctx = this.bgCanvas.getContext("2d", {"willReadFrequently": true})
 		this.fgctx = this.fgCanvas.getContext("2d", {"willReadFrequently": true})
-		if (emu.embed) { this.set_size(window.innerWidth, window.innerHeight) }
-		else{ this.set_size(512, 320) }
+		this.displayctx = this.display.getContext("2d", {"willReadFrequently": true})
+
+		this.resize(512, 320, 1)
 	}
 	
 	this.changed = () => {
-		clamp(this.x1, 0, this.width);
-		clamp(this.y1, 0, this.height);
-		clamp(this.x2, 0, this.width);
-		clamp(this.y2, 0, this.height);
+		this.x1 = clamp(this.x1, 0, this.width);
+		this.y1 = clamp(this.y1, 0, this.height);
+		this.x2 = clamp(this.x2, 0, this.width);
+		this.y2 = clamp(this.y2, 0, this.height);
 		return this.x2 > this.x1 && this.y2 > this.y1;
 	}
 	
@@ -44,7 +53,7 @@ function Screen(emu)
 		if(y2 > this.y2) this.y2 = y2;
 	}
 
-	this.palette = () => {
+	this.update_palette = () => {
 		let i, shift, colors = [];
 		for(i = 0, shift = 4; i < 4; ++i, shift ^= 4) {
 			let
@@ -55,22 +64,23 @@ function Screen(emu)
 			colors[i] |= colors[i] << 4;
 		}
 		for(i = 0; i < 16; i++)
-			this.palette[i] = colors[(i >> 2) ? (i >> 2) : (i & 3)];
+			this.palette[i] = colors[(i >> 2) ? (i >> 2) : (i & 3)]
 		this.change(0, 0, this.width, this.height);
 	}
 
 	this.resize = (width, height, scale) => {
-		clamp(width, 8, 0x800);
-		clamp(height, 8, 0x800);
-		clamp(scale, 1, 3);
+		width = clamp(width, 8, 0x800);
+		height = clamp(height, 8, 0x800);
+		scale = clamp(scale, 1, 3);
 		/* on rescale */
-		this.pixels = new Uint32Array(width * height * scale * scale);
+		let length = width * height * 4 * scale * scale
+		this.pixels = new Uint8ClampedArray(length)
 		this.scale = scale;
 		/* on resize */
 		if(this.width != width || this.height != height) {
 			let length = MAR2(width) * MAR2(height);
-			this.layers.fg = new Uint8Array(length)
-			this.layers.bg = new Uint8Array(length)
+			this.layers.fg = new Uint8ClampedArray(length)
+			this.layers.bg = new Uint8ClampedArray(length)
 			this.width = width;
 			this.height = height;
 		}
@@ -78,16 +88,21 @@ function Screen(emu)
 		emu.resize(width, height);
 	}
 	
-	this.screen_redraw = () => {
+	this.redraw = () => {
 		let i, x, y, k, l;
+		let colors = [[0x00,0x00,0x00],[0xff,0xff,0x00],[0x00,0xff,0xff],[0xff,0x00,0xff]]
 		for(y = this.y1; y < this.y2; y++) {
 			let ys = y * this.scale;
 			for(x = this.x1, i = MAR(x) + MAR(y) * MAR2(this.width); x < this.x2; x++, i++) {
-				let c = this.palette[this.fg[i] << 2 | this.bg[i]];
+				let color = this.layers.fg[i] ? this.layers.fg[i] : this.layers.bg[i]
 				for(k = 0; k < this.scale; k++) {
-					let oo = ((ys + k) * this.width + x) * this.scale;
-					for(l = 0; l < this.scale; l++)
-						this.pixels[oo + l] = c;
+					let oo = ((ys + k) * this.width + x) * this.scale * 4;
+					for(l = 0; l < this.scale; l++){
+						this.pixels[oo + l + 0] = colors[color][0]
+						this.pixels[oo + l + 1] = colors[color][1]
+						this.pixels[oo + l + 2] = colors[color][2]
+						this.pixels[oo + l + 3] = 0xff
+					}
 				}
 			}
 		}
@@ -146,7 +161,7 @@ function Screen(emu)
 				hor = x2 - x1, ver = y2 - y1;
 				for(ay = y1 * len, by = ay + ver * len; ay < by; ay += len)
 					for(ax = ay + x1, bx = ax + hor; ax < bx; ax++)
-						layer[ax] = color;
+						layer[ax] = color & 0xff
 				this.change(x1, y1, x2, y2);
 			}
 			/* pixel mode */
@@ -175,10 +190,9 @@ function Screen(emu)
 					let xmar = MAR(x), ymar = MAR(y);
 					let xmar2 = MAR2(x), ymar2 = MAR2(y);
 					if(xmar < wmar && ymar2 < hmar2) {
-						let sprite = emu.uxn.ram[rA];
 						let by = ymar2 * wmar2;
 						for(ay = ymar * wmar2, qy = qfy; ay < by; ay += wmar2, qy += fy) {
-							let ch1 = sprite[qy], ch2 = sprite[qy + 8] << 1, bx = xmar2 + ay;
+							let ch1 = emu.uxn.ram[rA + qy], ch2 = emu.uxn.ram[rA + qy + 8] << 1, bx = xmar2 + ay;
 							for(ax = xmar + ay, qx = qfx; ax < bx; ax++, qx -= fx) {
 								let color = ((ch1 >> qx) & 1) | ((ch2 >> qx) & 2);
 								if(opaque || color) layer[ax] = blending[color][blend];
@@ -192,10 +206,9 @@ function Screen(emu)
 					let xmar = MAR(x), ymar = MAR(y);
 					let xmar2 = MAR2(x), ymar2 = MAR2(y);
 					if(xmar < wmar && ymar2 < hmar2) {
-						let sprite = emu.uxn.ram[rA];
 						let by = ymar2 * wmar2;
 						for(ay = ymar * wmar2, qy = qfy; ay < by; ay += wmar2, qy += fy) {
-							let ch1 = sprite[qy], bx = xmar2 + ay;
+							let ch1 = emu.uxn.ram[rA + qy], bx = xmar2 + ay;
 							for(ax = xmar + ay, qx = qfx; ax < bx; ax++, qx -= fx) {
 								let color = (ch1 >> qx) & 1;
 								if(opaque || color) layer[ax] = blending[color][blend];
@@ -311,8 +324,8 @@ function Screen(emu)
 
 	this.on_resize = () => {
 		let length = MAR2(this.width) * MAR2(this.height)
-		this.layers.fg = new Uint8Array(length)
-		this.layers.bg = new Uint8Array(length)
+		this.layers.fg = new Uint8ClampedArray(length)
+		this.layers.bg = new Uint8ClampedArray(length)
 		
 	}
 
@@ -339,16 +352,5 @@ function Screen(emu)
 	this.set_size = (w, h) => {
 		this.set_width(w)
 		this.set_height(h)
-	}
-
-	this.update_palette = () => {
-		let r = emu.uxn.dev[0x8] << 8 | emu.uxn.dev[0x9]
-		let g = emu.uxn.dev[0xa] << 8 | emu.uxn.dev[0xb]
-		let b = emu.uxn.dev[0xc] << 8 | emu.uxn.dev[0xd]
-		for(let i = 0; i < 4; i++){
-			let red = (r >> ((3 - i) * 4)) & 0xf, green = (g >> ((3 - i) * 4)) & 0xf, blue = (b >> ((3 - i) * 4)) & 0xf
-			this.colors[i] = { r: red << 4 | red, g: green << 4 | green, b: blue << 4 | blue }
-		}
-		
 	}
 }
