@@ -34,6 +34,7 @@ function Emu (embed)
 			/* Reveal */
 			document.body.className = emulator.embed ? "embed" : "default"
 			document.title = "Varvara Emulator"
+
 			// Enable drag/drop load
 			document.body.addEventListener("dragover", (e) => {
 				e.preventDefault();
@@ -42,10 +43,12 @@ function Emu (embed)
 				e.preventDefault();
 				emulator.load_file(e.dataTransfer.files[0])
 			});
+
 			// Enable button load
 			document.getElementById("browser").addEventListener("change", (e) => {
 				emulator.load_file(e.target.files[0])
 			});
+
 			// Decode rom in url
 			const rom_url = window.location.hash.match(/r(om)?=([^&]+)/);
 			if (rom_url) {

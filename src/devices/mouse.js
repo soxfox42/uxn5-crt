@@ -23,7 +23,6 @@ function Mouse(emu)
 		const x = emu.screen.display.width * (event.clientX - bounds.left) / bounds.width
 		const y = emu.screen.display.height * (event.clientY - bounds.top) / bounds.height
 		this.move(x, y)
-		event.preventDefault()
 	}
 
 	this.on_down = (event) => {
