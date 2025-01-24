@@ -63,6 +63,9 @@ function Emu (embed)
 			setInterval(() => {
 				window.requestAnimationFrame(() => {
 					this.uxn.eval(peek16(this.uxn.dev, 0x20))
+					if(this.screen.changed()) {
+						this.screen.redraw()
+					}
 				});
 			}, 1000 / 60);
 		})
@@ -104,7 +107,7 @@ function Emu (embed)
 		case 0x0a:
 		case 0x0b:
 		case 0x0c:
-		case 0x0d: this.screen.update_palette(); break;
+		case 0x0d: this.screen.update_palette(); this.screen.palette(); break;
 		case 0x0f: console.warn("Program ended."); break;
 		// Console
 		case 0x18: this.console.write(val); break;
@@ -133,6 +136,9 @@ function Emu (embed)
 			const ptr = peek16(this.uxn.dev, 0x2c)
 			this.screen.draw_sprite(ctrl, x, y, move, ptr);
 			break; }
+		}
+		switch(port & 0xf0) {
+			case 0x20: this.screen.deo(port); break;
 		}
 	}
 }
