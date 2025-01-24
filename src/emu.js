@@ -67,21 +67,12 @@ function Emu (embed)
 						let x = this.screen.x1 * this.screen.scale, y = this.screen.y1 * this.screen.scale;
 						let w = this.screen.x2 * this.screen.scale - x, h = this.screen.y2 * this.screen.scale - y;
 						this.screen.redraw()
-						/* draw screen */
-						const pixelsid = new ImageData(this.screen.pixels, this.screen.width, this.screen.height)
-						this.screen.displayctx.putImageData(pixelsid,0,0);
+						const imagedata = new ImageData(this.screen.pixels, this.screen.width, this.screen.height)
+						this.screen.displayctx.putImageData(imagedata,0,0,x,y,w,h);
 					}
 				});
 			}, 1000 / 60);
 		})
-	}
-
-	this.resize = (width, height) => {
-		console.log(`Resize requested: ${width}x${height}`)
-		this.screen.el.style.width = width + "px"
-		this.screen.el.style.height = height + "px"
-		this.screen.displayctx.canvas.width = width;
-		this.screen.displayctx.canvas.height = height;
 	}
 
 	this.load_file = (file) => {

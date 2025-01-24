@@ -16,19 +16,16 @@ function Screen(emu)
 	this.pixels = 0
 	this.scale = 1
 	this.zoom = 1
-	this.width = 0
-	this.height = 0
+	this.width = this.height = 0
 	this.layers = {fg: 0, bg: 0};
-	this.colors = [{r: 0, g: 0, b:0}];
-	this.x1 = 0
-	this.y1 = 0
-	this.x2 = 0
-	this.y2 = 0
+	this.palette = [[],[],[],[]]
+	this.x1 = this.y1 = this.x2 = this.y2 = 0
 
 	this.init = () => {
 		this.el = document.getElementById("screen")
 		this.display = document.getElementById("display");
 		this.displayctx = this.display.getContext("2d", {"willReadFrequently": true})
+		this.set_zoom(1)
 		this.resize(512, 320, 1)
 	}
 	
@@ -47,32 +44,19 @@ function Screen(emu)
 		if(y2 > this.y2) this.y2 = y2;
 	}
 
-	this.palette = [
-		[0x00,0x00,0x00],
-		[0xff,0xff,0x00],
-		[0x00,0xff,0xff],
-		[0xff,0x00,0xff]]
-	// #375e .System/r DEO2
-	// #286c .System/g DEO2
-	// #2358 .System/b DEO2
-
 	this.update_palette = () => {
-		let i, sft, shift, colors = [];
+		let i, sft, shift, cr,cg,cb;
 		let r = emu.uxn.dev[0x8] << 8 | emu.uxn.dev[0x9]
 		let g = emu.uxn.dev[0xa] << 8 | emu.uxn.dev[0xb]
 		let b = emu.uxn.dev[0xc] << 8 | emu.uxn.dev[0xd]
-		console.log("update-palette")
 		for(i = 0, sft = 12; i < 4; ++i, sft -= 4) {
-			let
-				cr = (r >> sft) & 0xf,
-				cg = (g >> sft) & 0xf,
-				cb = (b >> sft) & 0xf;
+			cr = (r >> sft) & 0xf,
+			cg = (g >> sft) & 0xf,
+			cb = (b >> sft) & 0xf;
 			this.palette[i][0] = cr | (cr << 4)
 			this.palette[i][1] = cg | (cg << 4)
 			this.palette[i][2] = cb | (cb << 4)
-			console.log(i,r,g,b, this.palette[i])
 		}
-		console.log(this.palette)
 		this.change(0, 0, this.width, this.height);
 	}
 
@@ -93,7 +77,10 @@ function Screen(emu)
 			this.height = height;
 		}
 		this.change(0, 0, width, height);
-		emu.resize(width, height);
+		console.log(`Resize requested: ${width}x${height}`)
+		this.displayctx.canvas.width = width;
+		this.displayctx.canvas.height = height;
+		this.set_zoom(this.zoom)
 	}
 	
 	this.redraw = () => {
@@ -241,6 +228,10 @@ function Screen(emu)
 	}
 
 	this.set_zoom = (zoom) => {
-		console.log("TODO")
+		this.zoom = zoom
+		this.el.style.width = `${(this.width * this.zoom)}px`
+		this.el.style.height = `${(this.height * this.zoom)}px`
+		this.display.style.width = `${(this.width * this.zoom)}px`
+		this.display.style.height = `${(this.height * this.zoom)}px`
 	}
 }
