@@ -28,13 +28,8 @@ function Screen(emu)
 
 	this.init = () => {
 		this.el = document.getElementById("screen")
-		this.bgCanvas = document.getElementById("bgcanvas");
-		this.fgCanvas = document.getElementById("fgcanvas");
 		this.display = document.getElementById("display");
-		this.bgctx = this.bgCanvas.getContext("2d", {"willReadFrequently": true})
-		this.fgctx = this.fgCanvas.getContext("2d", {"willReadFrequently": true})
 		this.displayctx = this.display.getContext("2d", {"willReadFrequently": true})
-
 		this.resize(512, 320, 1)
 	}
 	
@@ -233,124 +228,11 @@ function Screen(emu)
 		}
 	}
 
-	/////////////////////////////////////////////////////////
-
 	this.toggle_zoom = () => {
 		this.set_zoom(this.zoom == 2 ? 1 : 2)
 	}
 
 	this.set_zoom = (zoom) => {
-		this.el.style.width = (this.width * zoom) + "px"
-		this.el.style.height = (this.height * zoom) + "px"
-		this.bgCanvas.style.width = this.fgCanvas.style.width = (this.width * zoom) + "px"
-		this.zoom = zoom
-	}
-
-	this.draw_pixel = (ctrl,x,y,move) => {
-		const ctx = ctrl & 0x40 ? this.fgctx : this.bgctx
-		const color = ctrl & 0x3
-		const c = this.colors[color]
-		const a = (color == 0 && (ctrl & 0x40)) ? 0 : 1
-		if (a) {
-			ctx.fillStyle = "rgba("+c.r.toString(10)+","+c.g.toString(10)+","+c.b.toString(10)+")"
-		}
-		// fill mode
-		if(ctrl & 0x80) {
-			let x2 = this.width
-			let y2 = this.height
-			if(ctrl & 0x10) x2 = x, x = 0
-			if(ctrl & 0x20) y2 = y, y = 0
-			a ? ctx.fillRect(x, y, x2 - x, y2 - y) : ctx.clearRect(x, y, x2 - x, y2 - y)
-		}
-		// pixel mode
-		else {
-			a? ctx.fillRect(x, y, 1, 1) : ctx.clearRect(x, y, 1, 1)
-		}
-		if (move & 0x1)
-			poke16(emu.uxn.dev, 0x28, x + 1);
-		if (move & 0x2)
-			poke16(emu.uxn.dev, 0x2a, y + 1);
-	}
-
-	this.draw_sprite = (ctrl, x, y, move, ptr) => {
-		const twobpp = !!(ctrl & 0x80);
-		const length = move >> 4;
-		const ctx = ctrl & 0x40 ? this.fgctx : this.bgctx;
-		const color = ctrl & 0xf, opaque = color % 5;
-		const width = ctx.canvas.width;
-		const height = ctx.canvas.height;
-		const flipx = (ctrl & 0x10), fx = flipx ? -1 : 1;
-		const flipy = (ctrl & 0x20), fy = flipy ? -1 : 1;
-		const dx = (move & 0x1) << 3, dxy = dx * fy;
-		const dy = (move & 0x2) << 2, dyx = dy * fx;
-		const addr_incr = (move & 0x4) << (1 + twobpp);
-		for (let i = 0; i <= length; i++) {
-			let x1 = x + dyx * i
-			let y1 = y + dxy * i
-			if(x1 >= 0x8000) x1 = -(0x10000 - x1)
-			if(y1 >= 0x8000) y1 = -(0x10000 - y1)
-			var imDat = ctx.getImageData(x1,y1, 8, 8);
-			for (let v = 0; v < 8; v++) {
-				let c = emu.uxn.ram[(ptr + v) & 0xffff] | (twobpp? (emu.uxn.ram[(ptr + v + 8) & 0xffff] << 8): 0);
-				let v1 = (flipy ? 7 - v : v)
-				for (let h = 7; h >= 0; --h, c >>= 1) {
-					let ch = (c & 1) | ((c >> 7) & 2)
-					if (opaque || ch) {
-						let imdati = ((flipx ? 7 - h : h) + v1 * 8) * 4;
-						let b = blending[ch][color]
-						let c = this.colors[b]
-						imDat.data[imdati] = c.r
-						imDat.data[imdati+1] = c.g
-						imDat.data[imdati+2] = c.b
-						imDat.data[imdati+3] = (!b && (ctrl & 0x40)) ? 0 : 0xff // alpha
-					}
-				}
-			}
-			ctx.putImageData(imDat, x1, y1);
-			ptr += addr_incr;
-		}
-		if(move & 0x1) {
-			x = x + dx * fx;
-			poke16(emu.uxn.dev, 0x28, x);
-		}
-		if(move & 0x2) {
-			y = y + dy * fy;
-			poke16(emu.uxn.dev, 0x2a, y);
-		}
-		if(move & 0x4) {
-			poke16(emu.uxn.dev, 0x2c, ptr);
-		}
-	}
-
-	this.on_resize = () => {
-		let length = MAR2(this.width) * MAR2(this.height)
-		this.layers.fg = new Uint8ClampedArray(length)
-		this.layers.bg = new Uint8ClampedArray(length)
-		
-	}
-
-	this.set_width = (w) => {
-		if(this.width != w) {
-			this.el.style.width = w + "px"
-			this.fgctx.canvas.width = w;
-			this.bgctx.canvas.width = w;
-			this.width = w;
-			this.on_resize()
-		}
-	}
-
-	this.set_height = (h) => {
-		if(this.height != h) { 
-			this.el.style.height = h + "px"
-			this.bgctx.canvas.height = h;
-			this.fgctx.canvas.height = h;
-			this.height = h;
-			this.on_resize()
-		}
-	}
-
-	this.set_size = (w, h) => {
-		this.set_width(w)
-		this.set_height(h)
+		console.log("TODO")
 	}
 }
