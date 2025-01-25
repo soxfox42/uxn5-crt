@@ -22,9 +22,14 @@ function Screen(emu)
 	this.x1 = this.y1 = this.x2 = this.y2 = 0
 
 	this.init = () => {
-		this.el = document.getElementById("screen")
 		this.display = document.getElementById("display");
 		this.displayctx = this.display.getContext("2d", {"willReadFrequently": true})
+		this.display.addEventListener("pointermove", emu.mouse.on_move)
+		this.display.addEventListener("pointerdown", emu.mouse.on_down)
+		this.display.addEventListener("pointerup", emu.mouse.on_up)
+		this.display.addEventListener("wheel", emu.mouse.on_scroll)
+		window.addEventListener("keydown", emu.controller.on_keybutton)
+		window.addEventListener("keyup", emu.controller.on_keybutton)
 		this.set_zoom(1)
 		this.resize(512, 320, 1)
 	}
@@ -229,8 +234,6 @@ function Screen(emu)
 
 	this.set_zoom = (zoom) => {
 		this.zoom = zoom
-		this.el.style.width = `${(this.width * this.zoom)}px`
-		this.el.style.height = `${(this.height * this.zoom)}px`
 		this.display.style.width = `${(this.width * this.zoom)}px`
 		this.display.style.height = `${(this.height * this.zoom)}px`
 	}
