@@ -1,5 +1,13 @@
 'use strict'
 
+function peek16(mem, addr) {
+	return (mem[addr] << 8) + mem[addr + 1]
+}
+
+function poke16(mem, addr, val) {
+	mem[addr] = val >> 8, mem[addr + 1] = val;
+}
+
 function Emu (embed)
 {
 	this.embed = embed
@@ -48,15 +56,16 @@ function Emu (embed)
 				emulator.load(rom, true);
 			}
 			// Or, get boot rom
-			else if(boot_rom) 
+			else if(boot_rom)
 				emulator.load(boot_rom, true);
 			// Start screen vector
 			setInterval(() => {
 				window.requestAnimationFrame(() => {
-					this.uxn.eval(peek16(this.uxn.dev, 0x20))
-					if(this.screen.changed()) {
-						let x = this.screen.x1 * this.screen.scale, y = this.screen.y1 * this.screen.scale;
-						let w = this.screen.x2 * this.screen.scale - x, h = this.screen.y2 * this.screen.scale - y;
+					if(this.screen.vector)
+						this.uxn.eval(this.screen.vector)
+					if(this.screen.x2 && this.screen.y2 && this.screen.changed()) {
+						let x = this.screen.x1, y = this.screen.y1;
+						let w = this.screen.x2 - x, h = this.screen.y2 - y;
 						this.screen.redraw()
 						const imagedata = new ImageData(this.screen.pixels, this.screen.width, this.screen.height)
 						this.screen.displayctx.putImageData(imagedata,0,0,x,y,w,h);
@@ -99,14 +108,6 @@ function Emu (embed)
 			case 0x20: this.screen.deo(port); break;
 		}
 	}
-}
-
-function peek16(mem, addr) {
-	return (mem[addr] << 8) + mem[addr + 1]
-}
-
-function poke16(mem, addr, val) {
-	mem[addr] = val >> 8, mem[addr + 1] = val;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
