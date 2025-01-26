@@ -24,7 +24,7 @@ function Screen(emu)
 
 	this.init = () => {
 		this.display = document.getElementById("display");
-		this.displayctx = this.display.getContext("webgl")
+		this.displayctx = this.display.getContext("webgl2")
 		this.display.addEventListener("pointermove", emu.mouse.on_move)
 		this.display.addEventListener("pointerdown", emu.mouse.on_down)
 		this.display.addEventListener("pointerup", emu.mouse.on_up)
@@ -86,6 +86,7 @@ function Screen(emu)
 			this.layers.bg = new Uint8ClampedArray(length)
 			this.width = width;
 			this.height = height;
+			if (this.gl_ready) this.init_textures();
 		}
 		this.change(0, 0, width, height);
 		console.log(`Resize requested: ${width}x${height}`)
@@ -230,7 +231,7 @@ function Screen(emu)
 	}
 
 	this.init_gl = () => {
-		/** @type {WebGLRenderingContext} */
+		/** @type {WebGL2RenderingContext} */
 		const gl = this.displayctx;
 
 		const compileShader = (type, source) => {
@@ -320,14 +321,30 @@ function Screen(emu)
 			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 		});
 
+		this.init_textures();
+
 		this.gl_ready = true;
+	}
+
+	this.init_textures = () => {
+		/** @type {WebGL2RenderingContext} */
+		const gl = this.displayctx;
+		["fg", "bg"].forEach(tex => {
+			console.log(`setup ${tex}, ${MAR2(this.width)}, ${MAR2(this.height)}`);
+			gl.bindTexture(gl.TEXTURE_2D, this.textures[tex]);
+			gl.texImage2D(
+				gl.TEXTURE_2D, 0, gl.LUMINANCE,
+				MAR2(this.width), MAR2(this.height), 0,
+				gl.LUMINANCE, gl.UNSIGNED_BYTE, this.layers[tex],
+			);
+		});
 	}
 
 	this.redraw = () => {
 		if (!this.gl_ready) return;
 		if (!this.changed()) return;
 
-		/** @type {WebGLRenderingContext} */
+		/** @type {WebGL2RenderingContext} */
 		const gl = this.displayctx;
 		gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
@@ -337,15 +354,35 @@ function Screen(emu)
 		gl.vertexAttribPointer(this.shader.attribs.aPosition, 2, gl.FLOAT, false, 0, 0);
 		gl.enableVertexAttribArray(this.shader.attribs.aPosition);
 
+		gl.pixelStorei(gl.UNPACK_ROW_LENGTH, MAR2(this.width));
+		gl.pixelStorei(gl.UNPACK_SKIP_ROWS, MAR(this.y1));
+		gl.pixelStorei(gl.UNPACK_SKIP_PIXELS, MAR(this.x1));
+
 		gl.activeTexture(gl.TEXTURE0)
 		gl.bindTexture(gl.TEXTURE_2D, this.textures.bg);
-		gl.texImage2D(gl.TEXTURE_2D, 0, gl.LUMINANCE, MAR2(this.width), MAR2(this.height), 0, gl.LUMINANCE, gl.UNSIGNED_BYTE, this.layers.bg);
+		gl.texSubImage2D(
+			gl.TEXTURE_2D, 0,
+			MAR(this.x1), MAR(this.y1),
+			this.x2 - this.x1, this.y2 - this.y1,
+			gl.LUMINANCE, gl.UNSIGNED_BYTE,
+			this.layers.bg,
+		)
 		gl.uniform1i(this.shader.uniforms.uTextureBG, 0);
 
 		gl.activeTexture(gl.TEXTURE1)
 		gl.bindTexture(gl.TEXTURE_2D, this.textures.fg);
-		gl.texImage2D(gl.TEXTURE_2D, 0, gl.LUMINANCE, MAR2(this.width), MAR2(this.height), 0, gl.LUMINANCE, gl.UNSIGNED_BYTE, this.layers.fg);
+		gl.texSubImage2D(
+			gl.TEXTURE_2D, 0,
+			MAR(this.x1), MAR(this.y1),
+			this.x2 - this.x1, this.y2 - this.y1,
+			gl.LUMINANCE, gl.UNSIGNED_BYTE,
+			this.layers.fg,
+		)
 		gl.uniform1i(this.shader.uniforms.uTextureFG, 1);
+
+		gl.pixelStorei(gl.UNPACK_ROW_LENGTH, 0);
+		gl.pixelStorei(gl.UNPACK_SKIP_ROWS, 0);
+		gl.pixelStorei(gl.UNPACK_SKIP_PIXELS, 0);
 
 		gl.activeTexture(gl.TEXTURE2)
 		gl.bindTexture(gl.TEXTURE_2D, this.textures.pal);
