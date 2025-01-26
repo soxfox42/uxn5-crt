@@ -1,12 +1,15 @@
 precision mediump float;
 uniform vec3 iResolution;
+
 uniform sampler2D uTextureFG;
 uniform sampler2D uTextureBG;
+uniform sampler2D uTexturePal;
 
 vec3 getPixel(vec2 pos) {
-    vec4 fg = texture2D(uTextureFG, pos);
-    vec4 bg = texture2D(uTextureBG, pos);
-    return mix(bg, fg, fg.a).rgb;
+  float fg = texture2D(uTextureFG, pos).r * 255.0;
+  float bg = texture2D(uTextureBG, pos).r * 255.0;
+  float pix = mix(bg, fg, step(0.5, fg));
+  return texture2D(uTexturePal, vec2(pix / 3.0, 0.0)).rgb;
 }
 
 //

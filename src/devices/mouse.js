@@ -19,31 +19,30 @@ function Mouse(emu)
 	}
 
 	this.on_move = (event) => {
-		const bounds = emu.screen.renderCanvas.getBoundingClientRect()
-		const x = emu.screen.bgCanvas.width * (event.clientX - bounds.left) / bounds.width
-		const y = emu.screen.bgCanvas.height * (event.clientY - bounds.top) / bounds.height
+		const bounds = emu.screen.display.getBoundingClientRect()
+		const x = emu.screen.width * (event.clientX - bounds.left) / bounds.width
+		const y = emu.screen.height * (event.clientY - bounds.top) / bounds.height
 		this.move(x, y)
-		event.preventDefault()
 	}
 
 	this.on_down = (event) => {
 		this.on_move(event)
 		this.down(event.buttons)
-		event.preventDefault()
+		// event.preventDefault()
 	}
 
 	this.on_up = (event) => {
 		this.up(event.buttons)
-		event.preventDefault();
+		// event.preventDefault();
 	}
 
 	this.on_scroll = (event) => {
 		if(event.wheelDelta > 0)
 			poke16(emu.uxn.dev, 0x9c, 0xffff)
-		else 
+		else
 			poke16(emu.uxn.dev, 0x9c, 0x0001)
 		emu.uxn.eval(peek16(emu.uxn.dev, 0x90))
 		poke16(emu.uxn.dev, 0x9c, 0x0000)
-		event.preventDefault();
+		// event.preventDefault();
 	}
 }
