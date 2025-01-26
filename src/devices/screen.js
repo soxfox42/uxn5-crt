@@ -273,15 +273,8 @@ function Screen(emu)
 			precision mediump float;
 			attribute vec4 aPosition;
 			varying vec2 vTexCoord;
-			uniform vec2 uxnResolution;
 			void main() {
 				vTexCoord = aPosition.xy * vec2(0.5, -0.5) + 0.5;
-
-				// Account for margins
-				vTexCoord *= uxnResolution;
-				vTexCoord += vec2(8.0, 8.0);
-				vTexCoord /= uxnResolution + vec2(16.0, 16.0);
-
 				gl_Position = aPosition;
 			}
 		`;
@@ -292,9 +285,12 @@ function Screen(emu)
 			uniform sampler2D uTextureFG;
 			uniform sampler2D uTextureBG;
 			uniform sampler2D uTexturePal;
+			uniform vec2 uUxnRes;
 			void main() {
-				float fg = texture2D(uTextureFG, vTexCoord).r * 255.0;
-				float bg = texture2D(uTextureBG, vTexCoord).r * 255.0;
+				// Account for margins
+				vec2 adjTexCoord = (vTexCoord * uUxnRes + vec2(8.0)) / (uUxnRes + vec2(16.0));
+				float fg = texture2D(uTextureFG, adjTexCoord).r * 255.0;
+				float bg = texture2D(uTextureBG, adjTexCoord).r * 255.0;
 				float pix = mix(bg, fg, step(0.5, fg));
 				gl_FragColor = texture2D(uTexturePal, vec2(pix / 3.0, 0.0));
 			}
@@ -356,7 +352,7 @@ function Screen(emu)
 		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, 4, 1, 0, gl.RGB, gl.UNSIGNED_BYTE, this.palette);
 		gl.uniform1i(this.shader.uniforms.uTexturePal, 2);
 
-		gl.uniform2f(this.shader.uniforms.uxnResolution, this.width, this.height);
+		gl.uniform2f(this.shader.uniforms.uUxnRes, this.width, this.height);
 
 		gl.uniform3f(this.shader.uniforms.iResolution, gl.canvas.width, gl.canvas.height, 1);
 		gl.uniform1f(this.shader.uniforms.resolutionDownScale, 1);
